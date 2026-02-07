@@ -1,4 +1,6 @@
-﻿using System;
+﻿namespace GerenciadorFuncionarios.Shared.Responses;
+
+using System;
 
 public record ApiResponse<T>(bool Success, T? Data, ErrorResponse? Error, DateTimeOffset Timestamp)
 {
