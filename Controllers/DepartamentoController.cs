@@ -6,6 +6,7 @@ using GerenciadorFuncionarios.DTOs.Departamento.Response;
 using GerenciadorFuncionarios.Services;
 using GerenciadorFuncionarios.Shared.Responses;
 
+
 [ApiController]
 [Route("api/departamentos")]
 public class DepartamentoController : ControllerBase
@@ -23,16 +24,34 @@ public class DepartamentoController : ControllerBase
 		var result = await _service.RegistrarDepartamentoAsync(data);
 
         return CreatedAtAction(
-		   nameof(GetDeaprtamentoById),
+		   nameof(GetDepartamentoById),
 		   new { id = result.Data!.Id },
 		   result
 	   );
     }
 
     [HttpGet("{id}")]
-    public ActionResult<ApiResponse<ResponseDepartamentoDTO>> GetDeaprtamentoById(Guid id)
+    public async Task<ActionResult<ApiResponse<ResponseDepartamentoDTO>>> GetDepartamentoById(Guid id)
     {
         var result = _service.ObterDepartamentoPorId(id);
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteById(Guid id)
+    {
+        await _service.DeletarDepartamento(id);
+
+        return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllDepartamentos(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var result = await _service.ObterTodosDepartamentos(page, pageSize);
 
         return Ok(result);
     }

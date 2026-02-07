@@ -37,14 +37,47 @@ public class DepartamentoService
 		return ApiResponse<ResponseDepartamentoDTO>.Ok(dto);
     }
 
-	public ApiResponse<ResponseDepartamentoDTO> ObterDepartamentoPorId(Guid id)
+	public async Task<ApiResponse<ResponseDepartamentoDTO>> ObterDepartamentoPorId(Guid id)
 	{
-		var departamento = _context.Departamento.Find(id);
+		var departamento = await _context.Departamento.FindAsync(id);
 
         if (departamento == null)
             throw new EntityNotFoundException("Departamento não encontrado.");
 
         var dto = departamento.Adapt<ResponseDepartamentoDTO>();
         return ApiResponse<ResponseDepartamentoDTO>.Ok(dto);
+    }
+
+    public async Task DeletarDepartamento(Guid id)
+    {
+        var departamento = await _context.Departamento.FindAsync(id);
+
+        if (departamento == null)
+            throw new EntityNotFoundException("Departamento não encontrado.");
+		
+		_context.Departamento.Remove(departamento);
+		await _context.SaveChangesAsync();
+    }
+
+    public async Task<ApiResponse<PaginationResponse<ResponseDepartamentoDTO>>> ObterTodosDepartamentos(int page, int pageSize)
+    {
+        var totalItems = await _context.Departamento.CountAsync();
+
+        var items = await _context.Departamento
+            .OrderBy(d => d.Name)
+			.Skip((page - 1) * pageSize)
+			.Take(pageSize)
+            .Select(d => d.Adapt<ResponseDepartamentoDTO>())
+			.ToListAsync();
+
+        var paginated = new PaginationResponse<ResponseDepartamentoDTO>
+        (
+            Items: items,
+            Page: page,
+            TotalItems: totalItems,
+            PageSize: pageSize
+        );
+
+        return ApiResponse<PaginationResponse<ResponseDepartamentoDTO>>.Ok(paginated);
     }
 } 
