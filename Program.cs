@@ -46,6 +46,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddScoped<DepartamentoService>();
+builder.Services.AddScoped<FuncionarioService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(

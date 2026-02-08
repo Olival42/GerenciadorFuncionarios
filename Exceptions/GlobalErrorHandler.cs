@@ -31,5 +31,17 @@ public class GlobalErrorHandler : IExceptionFilter
             context.Result = new ConflictObjectResult(ApiResponse<object>.Fail(error));
             context.ExceptionHandled = true;
         }
-	}
+
+        if (context.Exception is CPFAlreadyExistsException)
+        {
+            var error = new ErrorResponse
+                (
+                    Code: "CPF_ALREADY_EXISTS",
+                    Message: context.Exception.Message
+                );
+
+            context.Result = new ConflictObjectResult(ApiResponse<object>.Fail(error));
+            context.ExceptionHandled = true;
+        }
+    }
 }

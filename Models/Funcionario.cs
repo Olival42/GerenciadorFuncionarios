@@ -25,5 +25,4 @@ public class Funcionario
 
     [ForeignKey(nameof(DepartamentoId))]
     public Departamento? Departamento {  get; set; }
-
 }
