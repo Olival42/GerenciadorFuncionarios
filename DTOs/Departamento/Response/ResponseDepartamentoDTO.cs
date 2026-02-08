@@ -2,4 +2,4 @@
 
 using System;
 
-public record ResponseDepartamentoDTO(Guid Id, string Name) { }
+public record ResponseDepartamentoDTO(Guid Id, string Name, bool IsActive) { }

@@ -9,6 +9,7 @@ public record ResponseFuncionarioDTO
         string Phone,
         string Email,
         string CPF,
-        Guid DepartamentoId
+        Guid DepartamentoId,
+        bool IsActive
     )
 { }

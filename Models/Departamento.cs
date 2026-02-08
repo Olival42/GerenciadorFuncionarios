@@ -13,6 +13,8 @@ public class Departamento
 
     public string Name { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     public ICollection<Funcionario>? Funcionarios { get; set; } = new List<Funcionario>();
 
 }

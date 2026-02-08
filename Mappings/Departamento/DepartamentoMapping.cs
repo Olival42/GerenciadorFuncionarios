@@ -17,6 +17,7 @@ public static class DepartamentoMapping
         TypeAdapterConfig<Departamento, ResponseDepartamentoDTO>
         .NewConfig()
         .Map(dest => dest.Id, src => src.Id)
-        .Map(dest => dest.Name, src => src.Name);
+        .Map(dest => dest.Name, src => src.Name)
+        .Map(dest => dest.IsActive, src => src.IsActive);
     }
 }

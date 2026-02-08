@@ -23,9 +23,7 @@ public class DepartamentoService
 	public async Task<ApiResponse<ResponseDepartamentoDTO>> RegistrarDepartamentoAsync(RegistrarDepartamentoDTO data)
 	{
 		if(await _context.Departamento.AnyAsync(d => d.Name == data.Name))
-		{
-			throw new EntityAlreadyExistsException($"Departamento {data.Name} já exite.");
-		}
+            throw new EntityAlreadyExistsException($"Departamento {data.Name} já exite.");
 
 		var departamento = data.Adapt<Departamento>();
 
@@ -44,18 +42,26 @@ public class DepartamentoService
         if (departamento == null)
             throw new EntityNotFoundException("Departamento não encontrado.");
 
+        if (!departamento.IsActive)
+            throw new InactiveEntityException("Departamento está inativo.");
+
         var dto = departamento.Adapt<ResponseDepartamentoDTO>();
         return ApiResponse<ResponseDepartamentoDTO>.Ok(dto);
     }
 
-    public async Task DeletarDepartamento(Guid id)
+    public async Task InativarDepartamento(Guid id)
     {
         var departamento = await _context.Departamento.FindAsync(id);
 
         if (departamento == null)
             throw new EntityNotFoundException("Departamento não encontrado.");
-		
-		_context.Departamento.Remove(departamento);
+
+        if (!departamento.IsActive) 
+            throw new InactiveEntityException("Departamento já está inativo.");
+
+        departamento.IsActive = false;
+
+        _context.Departamento.Update(departamento);
 		await _context.SaveChangesAsync();
     }
 
@@ -64,6 +70,7 @@ public class DepartamentoService
         var totalItems = await _context.Departamento.CountAsync();
 
         var items = await _context.Departamento
+            .Where(d => d.IsActive)
             .OrderBy(d => d.Name)
 			.Skip((page - 1) * pageSize)
 			.Take(pageSize)

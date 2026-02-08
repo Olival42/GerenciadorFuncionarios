@@ -33,15 +33,15 @@ public class DepartamentoController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<ResponseDepartamentoDTO>>> GetDepartamentoById(Guid id)
     {
-        var result = _service.ObterDepartamentoPorId(id);
+        var result = await _service.ObterDepartamentoPorId(id);
 
         return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteById(Guid id)
+    public async Task<IActionResult> InactiveById(Guid id)
     {
-        await _service.DeletarDepartamento(id);
+        await _service.InativarDepartamento(id);
 
         return NoContent();
     }

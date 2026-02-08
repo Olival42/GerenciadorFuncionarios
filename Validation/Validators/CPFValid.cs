@@ -18,31 +18,26 @@ public class CPFValid
         if (cpf.Distinct().Count() == 1)
             return false;
 
-        var x = 10;
-        var sumFirstDigit = 0;
-        var sumSecondDigit = 0;
-
-        for (var i = 0; i < 9; i++)
-        {
-            sumFirstDigit = sumFirstDigit + (cpf[i] - '0') * x;
-            x--;
-        }
-
-        x = 11;
-        for (var i = 0; i < 10; i++)
-        {
-            sumSecondDigit = sumSecondDigit + (cpf[i] - '0') * x;
-            x--;
-        }
-
-        var reminderFirstDigit = sumFirstDigit * 10 % 11;
-        if (reminderFirstDigit == 10)
-            reminderFirstDigit = 0;
-
-        var reminderSecondDigit = sumSecondDigit * 10 % 11;
+        int reminderFirstDigit = CalculateDigit(cpf, 9);
+        int reminderSecondDigit = CalculateDigit(cpf, 10);
 
         return reminderFirstDigit == (cpf[9] - '0')
             && reminderSecondDigit == (cpf[10] - '0');
+    }
 
+    public static int CalculateDigit(string value, int size)
+    {
+        int sum = 0;
+        int multiplier = size + 1;
+
+        for (int i = 0; i < size; i++)
+        {
+            sum += (value[i] - '0') * multiplier;
+            multiplier--;
+        }
+
+        int remainder = sum * 10 % 11;
+
+        return remainder == 10 ? 0 : remainder;
     }
 }

@@ -36,4 +36,28 @@ public class FuncionarioController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> InactiveById(Guid id)
+    {
+        await _service.InativarPorId(id);
+
+        return NoContent();
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> UpdateFuncionario(Guid id, [FromBody] UpdateFuncionarioDTO data)
+    {
+        var result = await _service.Atualizar(id, data);
+
+        return Ok(result);
+    }
+
+    [HttpPatch("{id}/departamento")]
+    public async Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> UpdateDepartamento(Guid id, [FromBody] UpdateDepartamentoFuncionario data)
+    {
+        var result = await _service.AtualizarDepartamento(id, data);
+
+        return Ok(result);
+    }
 }

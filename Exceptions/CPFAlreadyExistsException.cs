@@ -1,4 +1,6 @@
-﻿using System;
+﻿namespace GerenciadorFuncionarios.Exceptions;
+
+using System;
 
 public class CPFAlreadyExistsException : Exception
 {

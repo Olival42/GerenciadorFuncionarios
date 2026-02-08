@@ -23,6 +23,8 @@ public class Funcionario
 
     public Guid DepartamentoId { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     [ForeignKey(nameof(DepartamentoId))]
     public Departamento? Departamento {  get; set; }
 }

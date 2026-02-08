@@ -23,6 +23,7 @@ public static class FuncionarioMapping
             .Map(dest => dest.Phone, src => src.Phone)
             .Map(dest => dest.Email, src => src.Email)
             .Map(dest => dest.CPF, src => src.CPF)
-            .Map(dest => dest.DepartamentoId, src => src.DepartamentoId);
+            .Map(dest => dest.DepartamentoId, src => src.DepartamentoId)
+            .Map(dest => dest.IsActive, src => src.IsActive);
     }
 }
