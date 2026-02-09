@@ -6,6 +6,7 @@ using GerenciadorFuncionarios.DTOs.Funcionario.Responses;
 using GerenciadorFuncionarios.Services;
 using GerenciadorFuncionarios.Shared.Responses;
 
+[Produces("application/json")]
 [ApiController]
 [Route("api/funcionarios")]
 public class FuncionarioController : ControllerBase

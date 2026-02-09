@@ -6,66 +6,47 @@ using GerenciadorFuncionarios.Exceptions;
 
 public class GlobalErrorHandler : IExceptionFilter
 {
-	public void OnException(ExceptionContext context)
-	{
-		if (context.Exception is EntityNotFoundException)
-		{
-			var error = new ErrorResponse
-				(
-					Code: "ENTITY_NOT_FOUND",
-					Message: context.Exception.Message
-				);
-
-            context.Result = new NotFoundObjectResult(ApiResponse<object>.Fail(error));
-            context.ExceptionHandled = true;
-        }
-
-		if (context.Exception is EntityAlreadyExistsException)
-		{
-            var error = new ErrorResponse
-                (
-                    Code: "ENTITY_ALREADY_EXISTS",
-                    Message: context.Exception.Message
-                );
-
-            context.Result = new ConflictObjectResult(ApiResponse<object>.Fail(error));
-            context.ExceptionHandled = true;
-        }
-
-        if (context.Exception is CPFAlreadyExistsException)
+    public void OnException(ExceptionContext context)
+    {
+        var (statusCode, error) = context.Exception switch
         {
-            var error = new ErrorResponse
-                (
-                    Code: "CPF_ALREADY_EXISTS",
-                    Message: context.Exception.Message
-                );
+            EntityNotFoundException ex => (
+                StatusCodes.Status404NotFound,
+                new ErrorResponse("ENTITY_NOT_FOUND", ex.Message)
+            ),
 
-            context.Result = new ConflictObjectResult(ApiResponse<object>.Fail(error));
-            context.ExceptionHandled = true;
-        }
+            EntityAlreadyExistsException ex => (
+                StatusCodes.Status409Conflict,
+                new ErrorResponse("ENTITY_ALREADY_EXISTS", ex.Message)
+            ),
 
-        if (context.Exception is EmailAlreadyExistsException)
+            CPFAlreadyExistsException ex => (
+                StatusCodes.Status409Conflict,
+                new ErrorResponse("CPF_ALREADY_EXISTS", ex.Message)
+            ),
+
+            EmailAlreadyExistsException ex => (
+                StatusCodes.Status409Conflict,
+                new ErrorResponse("EMAIL_ALREADY_EXISTS", ex.Message)
+            ),
+
+            InactiveEntityException ex => (
+                StatusCodes.Status409Conflict,
+                new ErrorResponse("ENTITY_INACTIVE", ex.Message)
+            ),
+
+            _ => (
+                StatusCodes.Status500InternalServerError,
+                new ErrorResponse("INTERNAL_SERVER_ERROR", "Erro interno no servidor")
+            )
+        };
+
+        context.Result = new ObjectResult(ApiResponse<ErrorResponse>.Fail(error))
         {
-            var error = new ErrorResponse
-                (
-                    Code: "EMAIL_ALREADY_EXISTS",
-                    Message: context.Exception.Message
-                );
+            StatusCode = statusCode
+        };
 
-            context.Result = new ConflictObjectResult(ApiResponse<object>.Fail(error));
-            context.ExceptionHandled = true;
-        }
-
-        if (context.Exception is InactiveEntityException)
-        {
-            var error = new ErrorResponse
-                (
-                    Code: "ENTITY_INACTIVE",
-                    Message: context.Exception.Message
-                );
-
-            context.Result = new ConflictObjectResult(ApiResponse<object>.Fail(error));
-            context.ExceptionHandled = true;
-        }
+        context.ExceptionHandled = true;
     }
 }
+

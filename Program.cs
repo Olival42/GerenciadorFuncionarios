@@ -17,8 +17,6 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<GlobalErrorHandler>();
 });
 
-builder.Services.AddOpenApi();
-
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -57,11 +55,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 MapsterConfig.RegisterMappings();
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
 
 app.UseHttpsRedirection();
 
