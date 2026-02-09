@@ -25,6 +25,9 @@ public class FuncionarioService
         if (await _context.Funcionario.AnyAsync(f => f.CPF == data.CPF))
             throw new CPFAlreadyExistsException("CPF já cadastrado para outro funcionário.");
 
+        if (await _context.Funcionario.AnyAsync(f => f.Email == data.Email))
+            throw new EmailAlreadyExistsException("Email já cadastrado para outro funcionário.");
+
         var departamento = await _context.Departamento.FindAsync(data.DepartamentoId);
 
         if (departamento == null)

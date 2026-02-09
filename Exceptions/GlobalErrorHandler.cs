@@ -44,6 +44,18 @@ public class GlobalErrorHandler : IExceptionFilter
             context.ExceptionHandled = true;
         }
 
+        if (context.Exception is EmailAlreadyExistsException)
+        {
+            var error = new ErrorResponse
+                (
+                    Code: "EMAIL_ALREADY_EXISTS",
+                    Message: context.Exception.Message
+                );
+
+            context.Result = new ConflictObjectResult(ApiResponse<object>.Fail(error));
+            context.ExceptionHandled = true;
+        }
+
         if (context.Exception is InactiveEntityException)
         {
             var error = new ErrorResponse
