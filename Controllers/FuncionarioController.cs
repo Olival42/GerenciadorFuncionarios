@@ -60,4 +60,15 @@ public class FuncionarioController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllFuncionarios(
+        [FromQuery] Guid? departamentoId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var result = await _service.ObterTodosFuncionarios(page, pageSize, departamentoId);
+
+        return Ok(result);
+    }
 }

@@ -9,5 +9,5 @@ public record PaginationResponse<T>
     )
 {
     public int TotalPages => (int)Math.Ceiling(TotalItems / (double)PageSize);
-    public bool IsLastPage => Page == TotalPages;
+    public bool IsLastPage => Page >= TotalPages;
 }

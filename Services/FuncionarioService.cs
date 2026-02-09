@@ -124,4 +124,34 @@ public class FuncionarioService
         var dto = func.Adapt<ResponseFuncionarioDTO>();
         return ApiResponse<ResponseFuncionarioDTO>.Ok(dto);
     }
+
+    public async Task<ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>> ObterTodosFuncionarios(int page, int pageSize, Guid? departamentoId)
+    {
+        var query = _context.Funcionario
+            .Where(f => f.IsActive);
+
+        if (departamentoId.HasValue)
+        {
+            query = query.Where(f => f.DepartamentoId == departamentoId);
+        }
+
+        var totalItems = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(f => f.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(d => d.Adapt<ResponseFuncionarioDTO>())
+            .ToListAsync();
+
+        var paginated = new PaginationResponse<ResponseFuncionarioDTO>
+        (
+            Items: items,
+            Page: page,
+            TotalItems: totalItems,
+            PageSize: pageSize
+        );
+
+        return ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>.Ok(paginated);
+    }
 }
