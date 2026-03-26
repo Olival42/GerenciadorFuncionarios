@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GerenciadorFuncionarios.DTOs.Funcionario.Requests;
 using GerenciadorFuncionarios.DTOs.Funcionario.Responses;
 using GerenciadorFuncionarios.Services;
 using GerenciadorFuncionarios.Shared.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 [Produces("application/json")]
 [ApiController]
@@ -18,6 +17,7 @@ public class FuncionarioController : ControllerBase
         _service = service;
 	}
 
+    [Authorize(Roles = "ADMIN,GERENTE")]
     [HttpPost("registrar")]
     public async Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> Resgister([FromBody] RegisterFuncionarioDTO data)
     {
@@ -30,6 +30,7 @@ public class FuncionarioController : ControllerBase
        );
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> GetFuncionarioById(Guid id)
     {
@@ -38,6 +39,7 @@ public class FuncionarioController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize(Roles = "ADMIN")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> InactiveById(Guid id)
     {
@@ -46,6 +48,7 @@ public class FuncionarioController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "ADMIN,GERENTE")]
     [HttpPatch("{id}")]
     public async Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> UpdateFuncionario(Guid id, [FromBody] UpdateFuncionarioDTO data)
     {
@@ -54,6 +57,7 @@ public class FuncionarioController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize(Roles = "ADMIN,GERENTE")]
     [HttpPatch("{id}/departamento")]
     public async Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> UpdateDepartamento(Guid id, [FromBody] UpdateDepartamentoFuncionario data)
     {
@@ -62,6 +66,7 @@ public class FuncionarioController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllFuncionarios(
         [FromQuery] Guid? departamentoId,

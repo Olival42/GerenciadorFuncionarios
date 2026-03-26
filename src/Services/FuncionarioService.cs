@@ -10,6 +10,7 @@ using GerenciadorFuncionarios.Models;
 using GerenciadorFuncionarios.Shared.Responses;
 using Mapster;
 using GerenciadorFuncionarios.Exceptions;
+using BCrypt.Net;
 
 public class FuncionarioService
 {
@@ -28,17 +29,17 @@ public class FuncionarioService
         if (await _context.Funcionario.AnyAsync(f => f.Email == data.Email))
             throw new EmailAlreadyExistsException("Email já cadastrado para outro funcionário.");
 
-        var departamento = await _context.Departamento.FindAsync(data.DepartamentoId);
+        var departamento = await _context.Departamento
+            .Where(d => d.Id == data.DepartamentoId && d.IsActive)
+            .FirstOrDefaultAsync();
 
         if (departamento == null)
             throw new EntityNotFoundException("Departamento não encontrado.");
 
-        if (!departamento.IsActive)
-            throw new InactiveEntityException("Não é possível associar um funcionário a um departamento inativo.");
-
         var func = data.Adapt<Funcionario>();
         
-        func.Departamento = departamento;
+        func.PasswordHash = BCrypt.HashPassword(data.Password);
+        func.DepartamentoId = departamento.Id;
 
         _context.Funcionario.Add(func);
         await _context.SaveChangesAsync();
@@ -50,27 +51,25 @@ public class FuncionarioService
 
     public async Task<ApiResponse<ResponseFuncionarioDTO>> ObterFuncionarioPorId(Guid id)
     {
-        var func = await _context.Funcionario.FindAsync(id);
+        var func = await _context.Funcionario
+            .Where(f => f.Id == id && f.IsActive)
+            .ProjectToType<ResponseFuncionarioDTO>()
+            .FirstOrDefaultAsync();
 
         if (func == null)
             throw new EntityNotFoundException("Funcionário não encontrado.");
 
-        if (!func.IsActive)
-            throw new InactiveEntityException("Funcionário está inativo");
-
-        var dto = func.Adapt<ResponseFuncionarioDTO>();
-        return ApiResponse<ResponseFuncionarioDTO>.Ok(dto);
+        return ApiResponse<ResponseFuncionarioDTO>.Ok(func);
     }
 
     public async Task InativarPorId(Guid id)
     {
-        var func = await _context.Funcionario.FindAsync(id);
+        var func = await _context.Funcionario
+            .Where(f => f.Id == id && f.IsActive)
+            .FirstOrDefaultAsync();
 
         if (func == null)
             throw new EntityNotFoundException("Funcionário não encontrado.");
-
-        if (!func.IsActive)
-            throw new InactiveEntityException("Funcionário já está inativo");
 
         func.IsActive = false;
 
@@ -79,22 +78,18 @@ public class FuncionarioService
 
     public async Task<ApiResponse<ResponseFuncionarioDTO>> Atualizar(Guid id, UpdateFuncionarioDTO data)
     {
-        var func = await _context.Funcionario.FindAsync(id);
+        var func = await _context.Funcionario
+            .Where(f => f.Id == id && f.IsActive)
+            .FirstOrDefaultAsync();
 
         if (func == null)
             throw new EntityNotFoundException("Funcionário não encontrado.");
 
-        if (!func.IsActive)
-            throw new InactiveEntityException("Funcionário está inativo");
-
-        if(data.Name is not null)
+        if (data.Name is not null)
             func.Name = data.Name;
 
-        if(data.Phone is not null)
+        if (data.Phone is not null)
             func.Phone = data.Phone;
-
-        if(data.Email is not null)
-            func.Email = data.Email;
 
         await _context.SaveChangesAsync();
 
@@ -104,23 +99,21 @@ public class FuncionarioService
 
     public async Task<ApiResponse<ResponseFuncionarioDTO>> AtualizarDepartamento(Guid id, UpdateDepartamentoFuncionario data)
     {
-        var func = await _context.Funcionario.FindAsync(id);
+        var func = await _context.Funcionario
+            .Where(f => f.Id == id && f.IsActive)
+            .FirstOrDefaultAsync();
 
         if (func == null)
             throw new EntityNotFoundException("Funcionário não encontrado.");
 
-        if (!func.IsActive)
-            throw new InactiveEntityException("Funcionário está inativo");
-
-        var departamento = await _context.Departamento.FindAsync(data.DepartamentoId);
+        var departamento = await _context.Departamento
+            .Where(d => d.Id == data.DepartamentoId && d.IsActive)
+            .FirstOrDefaultAsync();
 
         if (departamento == null)
             throw new EntityNotFoundException("Departamento não encontrado.");
 
-        if (!departamento.IsActive)
-            throw new InactiveEntityException("Não é possível associar um funcionário a um departamento inativo.");
-
-        func.Departamento = departamento;
+        func.DepartamentoId = departamento.Id;
 
         await _context.SaveChangesAsync();
 
@@ -144,7 +137,7 @@ public class FuncionarioService
             .OrderBy(f => f.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(d => d.Adapt<ResponseFuncionarioDTO>())
+            .ProjectToType<ResponseFuncionarioDTO>()
             .ToListAsync();
 
         var paginated = new PaginationResponse<ResponseFuncionarioDTO>

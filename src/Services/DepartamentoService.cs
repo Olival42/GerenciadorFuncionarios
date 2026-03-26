@@ -37,27 +37,25 @@ public class DepartamentoService
 
 	public async Task<ApiResponse<ResponseDepartamentoDTO>> ObterDepartamentoPorId(Guid id)
 	{
-		var departamento = await _context.Departamento.FindAsync(id);
+		var departamento = await _context.Departamento
+            .Where(d => d.Id == id && d.IsActive)
+            .ProjectToType<ResponseDepartamentoDTO>()
+			.FirstOrDefaultAsync();
 
         if (departamento == null)
             throw new EntityNotFoundException("Departamento não encontrado.");
 
-        if (!departamento.IsActive)
-            throw new InactiveEntityException("Departamento está inativo.");
-
-        var dto = departamento.Adapt<ResponseDepartamentoDTO>();
-        return ApiResponse<ResponseDepartamentoDTO>.Ok(dto);
+        return ApiResponse<ResponseDepartamentoDTO>.Ok(departamento);
     }
 
     public async Task InativarDepartamento(Guid id)
     {
-        var departamento = await _context.Departamento.FindAsync(id);
+        var departamento = await _context.Departamento
+            .Where(d => d.Id == id && d.IsActive)
+			.FirstOrDefaultAsync();
 
         if (departamento == null)
             throw new EntityNotFoundException("Departamento não encontrado.");
-
-        if (!departamento.IsActive) 
-            throw new InactiveEntityException("Departamento já está inativo.");
 
         departamento.IsActive = false;
 

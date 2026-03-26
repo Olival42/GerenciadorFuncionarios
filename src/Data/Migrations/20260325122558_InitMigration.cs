@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GerenciadorFuncionarios.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,8 @@ namespace GerenciadorFuncionarios.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,21 +25,25 @@ namespace GerenciadorFuncionarios.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "funcionarios",
+                name: "Usuario",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Phone = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    CPF = table.Column<string>(type: "text", nullable: false),
-                    DepartamentoId = table.Column<Guid>(type: "uuid", nullable: false)
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false),
+                    UserType = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Phone = table.Column<string>(type: "text", nullable: true),
+                    CPF = table.Column<string>(type: "text", nullable: true),
+                    DepartamentoId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_funcionarios", x => x.Id);
+                    table.PrimaryKey("PK_Usuario", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_funcionarios_departamentos_DepartamentoId",
+                        name: "FK_Usuario_departamentos_DepartamentoId",
                         column: x => x.DepartamentoId,
                         principalTable: "departamentos",
                         principalColumn: "Id",
@@ -46,19 +51,19 @@ namespace GerenciadorFuncionarios.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_funcionarios_CPF",
-                table: "funcionarios",
+                name: "IX_Usuario_CPF",
+                table: "Usuario",
                 column: "CPF",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_funcionarios_DepartamentoId",
-                table: "funcionarios",
+                name: "IX_Usuario_DepartamentoId",
+                table: "Usuario",
                 column: "DepartamentoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_funcionarios_Email",
-                table: "funcionarios",
+                name: "IX_Usuario_Email",
+                table: "Usuario",
                 column: "Email",
                 unique: true);
         }
@@ -67,7 +72,7 @@ namespace GerenciadorFuncionarios.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "funcionarios");
+                name: "Usuario");
 
             migrationBuilder.DropTable(
                 name: "departamentos");

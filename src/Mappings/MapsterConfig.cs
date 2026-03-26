@@ -1,6 +1,5 @@
-﻿using System;
+﻿namespace GerenciadorFuncionarios.Mappings;
 
-using Mapster;
 using GerenciadorFuncionarios.Mappings.Departamento;
 using GerenciadorFuncionarios.Mappings.Funcionario;
 

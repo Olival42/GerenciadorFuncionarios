@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GerenciadorFuncionarios.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260208150914_AddAttributeIsActive")]
-    partial class AddAttributeIsActive
+    [Migration("20260325122558_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,11 +43,43 @@ namespace GerenciadorFuncionarios.Migrations
                     b.ToTable("departamentos");
                 });
 
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Funcionario", b =>
+            modelBuilder.Entity("GerenciadorFuncionarios.Models.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Usuario");
+
+                    b.HasDiscriminator<string>("UserType").HasValue("Usuario");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("GerenciadorFuncionarios.Models.Funcionario", b =>
+                {
+                    b.HasBaseType("GerenciadorFuncionarios.Models.Usuario");
 
                     b.Property<string>("CPF")
                         .IsRequired()
@@ -55,10 +87,6 @@ namespace GerenciadorFuncionarios.Migrations
 
                     b.Property<Guid>("DepartamentoId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -71,17 +99,12 @@ namespace GerenciadorFuncionarios.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("CPF")
                         .IsUnique();
 
                     b.HasIndex("DepartamentoId");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("funcionarios");
+                    b.HasDiscriminator().HasValue("Funcionario");
                 });
 
             modelBuilder.Entity("GerenciadorFuncionarios.Models.Funcionario", b =>

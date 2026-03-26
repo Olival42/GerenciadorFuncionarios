@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using GerenciadorFuncionarios.Shared.Responses;
-using System;
 using GerenciadorFuncionarios.Exceptions;
 
 public class GlobalErrorHandler : IExceptionFilter
@@ -35,9 +34,19 @@ public class GlobalErrorHandler : IExceptionFilter
                 new ErrorResponse("ENTITY_INACTIVE", ex.Message)
             ),
 
-            _ => (
+            BadCredentialsException ex => (
+                StatusCodes.Status401Unauthorized,
+                new ErrorResponse("BAD_CREDENTIALS", ex.Message)
+            ),
+
+            UnauthorizedAccessException ex => (
+                StatusCodes.Status401Unauthorized,
+                new ErrorResponse("ACCESS_UNAUTHORIZED", ex.Message)
+            ),
+
+            Exception ex => (
                 StatusCodes.Status500InternalServerError,
-                new ErrorResponse("INTERNAL_SERVER_ERROR", "Erro interno no servidor")
+                new ErrorResponse("INTERNAL_SERVER_ERROR", ex.Message)
             )
         };
 
@@ -49,4 +58,3 @@ public class GlobalErrorHandler : IExceptionFilter
         context.ExceptionHandled = true;
     }
 }
-

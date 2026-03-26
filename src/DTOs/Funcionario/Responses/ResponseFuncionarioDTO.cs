@@ -1,6 +1,7 @@
 ﻿namespace GerenciadorFuncionarios.DTOs.Funcionario.Responses;
 
 using System;
+using GerenciadorFuncionarios.Enums;
 
 public record ResponseFuncionarioDTO 
     (
@@ -10,6 +11,7 @@ public record ResponseFuncionarioDTO
         string Email,
         string CPF,
         Guid DepartamentoId,
+        Role Role,
         bool IsActive
     )
 { }

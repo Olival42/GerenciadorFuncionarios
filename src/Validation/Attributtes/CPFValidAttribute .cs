@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using GerenciadorFuncionarios.Validation.Validators;
 
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
 public class CPFValidAttribute : ValidationAttribute
 {
 

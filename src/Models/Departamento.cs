@@ -11,7 +11,7 @@ public class Departamento
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     public bool IsActive { get; set; } = true;
 
