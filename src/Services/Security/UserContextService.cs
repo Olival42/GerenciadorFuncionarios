@@ -1,3 +1,5 @@
+namespace GerenciadorFuncionarios.Services.Security;
+
 using System.Security.Claims;
 
 public class UserContextService

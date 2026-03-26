@@ -4,6 +4,7 @@ using GerenciadorFuncionarios.DTOs.Auth.Responses;
 using GerenciadorFuncionarios.Services;
 using GerenciadorFuncionarios.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 
 [ApiController]
 [Route("api/auth")]
@@ -16,6 +17,7 @@ public class AuthController : ControllerBase
 		_service = service;
 	}
 
+	[EnableRateLimiting("Auth")]
 	[AllowAnonymous]
 	[HttpPost("login")]
 	public async Task<ActionResult<ApiResponse<AuthResponseDTO>>> Login([FromBody] LoginDTO data)
@@ -61,7 +63,7 @@ public class AuthController : ControllerBase
 		return NoContent();
 	}
 
-	// Arruma 
+	[EnableRateLimiting("Auth")]
 	[AllowAnonymous]
 	[HttpPost("refresh")]
 	public async Task<IActionResult> Refresh()
