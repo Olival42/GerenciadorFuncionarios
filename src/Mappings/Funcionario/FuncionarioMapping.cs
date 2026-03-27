@@ -1,6 +1,5 @@
 ﻿namespace GerenciadorFuncionarios.Mappings.Funcionario;
 
-using System;
 using Mapster;
 using GerenciadorFuncionarios.Models;
 using GerenciadorFuncionarios.DTOs.Funcionario.Requests;

@@ -7,12 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 public static class AppDbInitializer
 {
-    public static void Seed(AppDbContext db)
+    public static void Seed(AppDbContext db, ILogger logger)
     {
+        logger.LogInformation("Iniciando seed do banco de dados");
+
         db.Database.Migrate();
 
         if (!db.Funcionario.Any(f => f.Role == Role.ADMIN))
         {
+            logger.LogInformation("Criando usuário administrador");
+
             var admin = new Funcionario
             {
                 Email = "admin@admin.com",
@@ -26,6 +30,11 @@ public static class AppDbInitializer
 
             db.Funcionario.Add(admin);
             db.SaveChanges();
+
+            logger.LogInformation("Usuário administrador criado com sucesso");
+        } else
+        {
+            logger.LogInformation("Usuário administrador já existe");
         }
     }
 }

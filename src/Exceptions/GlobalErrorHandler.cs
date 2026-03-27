@@ -1,13 +1,23 @@
-﻿﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿namespace GerenciadorFuncionarios.Exceptions;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using GerenciadorFuncionarios.Shared.Responses;
-using GerenciadorFuncionarios.Exceptions;
 
 public class GlobalErrorHandler : IExceptionFilter
 {
+    private readonly ILogger<GlobalErrorHandler> _logger;
+
+    public GlobalErrorHandler(ILogger<GlobalErrorHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public void OnException(ExceptionContext context)
     {
-        var (statusCode, error) = context.Exception switch
+        var exception = context.Exception;
+
+        var (statusCode, error) = exception switch
         {
             EntityNotFoundException ex => (
                 StatusCodes.Status404NotFound,
@@ -49,6 +59,14 @@ public class GlobalErrorHandler : IExceptionFilter
                 new ErrorResponse("INTERNAL_SERVER_ERROR", ex.Message)
             )
         };
+
+        _logger.LogWarning(
+            exception,
+            "Erro {Code} em {Method} {Path}",
+            error.Code,
+            context.HttpContext.Request.Method,
+            context.HttpContext.Request.Path
+        );
 
         context.Result = new ObjectResult(ApiResponse<ErrorResponse>.Fail(error))
         {

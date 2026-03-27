@@ -1,6 +1,5 @@
 ﻿namespace GerenciadorFuncionarios.DTOs.Departamento.Requests;
 
-using System;
 using System.ComponentModel.DataAnnotations;
 
 public record RegistrarDepartamentoDTO

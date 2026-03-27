@@ -13,6 +13,18 @@ public static class RateLimitConfig
 
         options.OnRejected = async (context, info) =>
         {
+            var logger = context.HttpContext.RequestServices
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger("RateLimiter");
+
+            var ip = context.HttpContext.Connection.RemoteIpAddress?.ToString();
+
+           logger.LogWarning(
+                "Rate limit excedido. IP: {IP} Endpoint: {Endpoint}",
+                ip,
+                context.HttpContext.Request.Path
+            );
+
             context.HttpContext.Response.StatusCode = 429;
 
             await context.HttpContext.Response.WriteAsJsonAsync(ApiResponse<ErrorResponse>
@@ -23,24 +35,26 @@ public static class RateLimitConfig
     private static void AddGlobalLimit(this RateLimiterOptions options)
     {
         options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 100,
-                Window = TimeSpan.FromMinutes(1),
-                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                QueueLimit = 10
-            }));
+            RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 100,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0
+                }));
     }
 
     private static void AddAuthLimit(this RateLimiterOptions options)
     {
-        options.AddFixedWindowLimiter("Auth", config =>
-        {
-            config.PermitLimit = 10;
-            config.Window = TimeSpan.FromMinutes(1);
-            config.QueueLimit = 0;
-        });
+        options.AddPolicy("Auth", context =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 10,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0
+                }));
     }
 }

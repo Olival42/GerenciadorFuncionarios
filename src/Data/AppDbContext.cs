@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using GerenciadorFuncionarios.Models;
+﻿namespace GerenciadorFuncionarios.Data;
 
-namespace GerenciadorFuncionarios.Data;
+using Microsoft.EntityFrameworkCore;
+using GerenciadorFuncionarios.Models;
 
 public class AppDbContext : DbContext
 {

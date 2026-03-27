@@ -1,7 +1,7 @@
+namespace GerenciadorFuncionarios.Infra;
+
 using GerenciadorFuncionarios.Services;
 using GerenciadorFuncionarios.Services.Security;
-
-namespace GerenciadorFuncionarios.Infra;
 
 public static class DependencyInjection
 {

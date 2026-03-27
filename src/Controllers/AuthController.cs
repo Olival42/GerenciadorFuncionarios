@@ -1,3 +1,5 @@
+namespace GerenciadorFuncionarios.Controllers;
+
 using Microsoft.AspNetCore.Mvc;
 using GerenciadorFuncionarios.DTOs.Auth.Requests;
 using GerenciadorFuncionarios.DTOs.Auth.Responses;
@@ -63,7 +65,6 @@ public class AuthController : ControllerBase
 		return NoContent();
 	}
 
-	[EnableRateLimiting("Auth")]
 	[AllowAnonymous]
 	[HttpPost("refresh")]
 	public async Task<IActionResult> Refresh()

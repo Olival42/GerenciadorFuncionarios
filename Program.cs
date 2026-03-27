@@ -61,6 +61,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 MapsterConfig.RegisterMappings();
 
 var app = builder.Build();
@@ -77,7 +81,8 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    AppDbInitializer.Seed(db);
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    AppDbInitializer.Seed(db, logger);
 }
 
 app.Run();

@@ -7,6 +7,10 @@ public class DataErrorHandler
 {
     public static BadRequestObjectResult OnException(ActionContext context)
     {
+        var logger = context.HttpContext.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Validation");
+
         var errors = context.ModelState
             .Where(x => x.Value!.Errors.Count() > 0)
             .SelectMany(x => x.Value!.Errors.Select(e =>
@@ -17,6 +21,11 @@ public class DataErrorHandler
                     )
                 )
             ).ToList();
+
+        logger.LogWarning(
+            "Erro de validação. Path: {Path} Erros: {Count}",
+            context.HttpContext.Request.Path,
+            errors.Count());
 
         var response = new ApiResponse<List<DataErrors>>(
             Success: false,

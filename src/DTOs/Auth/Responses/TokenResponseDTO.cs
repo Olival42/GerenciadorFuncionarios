@@ -1,6 +1,6 @@
-using GerenciadorFuncionarios.Enums;
-
 namespace GerenciadorFuncionarios.DTOs.Auth.Responses;
+
+using GerenciadorFuncionarios.Enums;
 
 public record TokenResponseDTO
     (

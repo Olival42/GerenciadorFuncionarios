@@ -1,7 +1,6 @@
 namespace GerenciadorFuncionarios.Services.Security;
 
 using System.Text;
-using GerenciadorFuncionarios.Data;
 using GerenciadorFuncionarios.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

@@ -1,9 +1,7 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿namespace GerenciadorFuncionarios.Models;
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-namespace GerenciadorFuncionarios.Models;
 
 [Table("departamentos")]
 public class Departamento

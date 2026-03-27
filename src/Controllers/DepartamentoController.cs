@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿namespace GerenciadorFuncionarios.Controllers;
+
+using Microsoft.AspNetCore.Mvc;
 using GerenciadorFuncionarios.DTOs.Departamento.Requests;
 using GerenciadorFuncionarios.DTOs.Departamento.Response;
 using GerenciadorFuncionarios.Services;

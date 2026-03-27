@@ -1,3 +1,5 @@
+namespace GerenciadorFuncionarios.Services;
+
 using StackExchange.Redis;
 
 public class RedisService
