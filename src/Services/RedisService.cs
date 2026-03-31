@@ -1,8 +1,9 @@
 namespace GerenciadorFuncionarios.Services;
 
+using GerenciadorFuncionarios.Adapters;
 using StackExchange.Redis;
 
-public class RedisService
+public class RedisService : IRedisService
 {
     private readonly IDatabase _db;
 

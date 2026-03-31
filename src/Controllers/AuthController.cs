@@ -7,14 +7,15 @@ using GerenciadorFuncionarios.Services;
 using GerenciadorFuncionarios.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
+using GerenciadorFuncionarios.Adapters;
 
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-	private readonly AuthService _service;
+	private readonly IAuthService _service;
 
-	public AuthController(AuthService service)
+	public AuthController(IAuthService service)
 	{
 		_service = service;
 	}
@@ -55,10 +56,7 @@ public class AuthController : ControllerBase
 	{
 		var refreshToken = Request.Cookies["refreshToken"];
 
-		if (!string.IsNullOrEmpty(refreshToken))
-		{
-			await _service.Logout(refreshToken);
-		}
+		await _service.Logout(refreshToken ?? string.Empty);
 
 		Response.Cookies.Delete("refreshToken");
 

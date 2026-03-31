@@ -11,7 +11,10 @@ public static class AppDbInitializer
     {
         logger.LogInformation("Iniciando seed do banco de dados");
 
-        db.Database.Migrate();
+        if (db.Database.IsRelational())
+        {
+            db.Database.Migrate();
+        }
 
         if (!db.Funcionario.Any(f => f.Role == Role.ADMIN))
         {
@@ -32,7 +35,8 @@ public static class AppDbInitializer
             db.SaveChanges();
 
             logger.LogInformation("Usuário administrador criado com sucesso");
-        } else
+        }
+        else
         {
             logger.LogInformation("Usuário administrador já existe");
         }

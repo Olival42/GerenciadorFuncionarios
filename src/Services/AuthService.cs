@@ -1,31 +1,25 @@
 namespace GerenciadorFuncionarios.Services;
 
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using GerenciadorFuncionarios.Data;
 using GerenciadorFuncionarios.Shared.Responses;
 using BCrypt.Net;
 using GerenciadorFuncionarios.DTOs.Auth.Requests;
-using GerenciadorFuncionarios.Services.Security;
 using GerenciadorFuncionarios.DTOs.Auth.Responses;
 using GerenciadorFuncionarios.Exceptions;
+using GerenciadorFuncionarios.Adapters;
 
-public class AuthService
+public class AuthService : IAuthService
 {
 
     private readonly ILogger<AuthService> _logger;
-    private readonly AppDbContext _context;
-
-    private readonly JwtService _jwtService;
-
-    private readonly RedisService _redis;
-
-    private readonly UserContextService _userContext;
-
-    public AuthService(AppDbContext context, JwtService jwtService, RedisService redisService, UserContextService userContext, ILogger<AuthService> logger)
+    private readonly IFuncionarioRepository _repository;
+    private readonly IJwtService _jwtService;
+    private readonly IRedisService _redis;
+    private readonly IUserContextService _userContext;
+    public AuthService(IFuncionarioRepository repository, IJwtService jwtService, IRedisService redisService, IUserContextService userContext, ILogger<AuthService> logger)
     {
         _jwtService = jwtService;
-        _context = context;
+        _repository = repository;
         _redis = redisService;
         _userContext = userContext;
         _logger = logger;
@@ -38,9 +32,7 @@ public class AuthService
             data.Email
         );
 
-        var func = await _context.Funcionario
-            .Where(f => f.Email == data.Email)
-            .FirstOrDefaultAsync();
+        var func = await _repository.GetByEmail(data.Email);
 
         _logger.LogDebug(
             "Funcionario encontrado. Id: {Id} Email: {Email}",
@@ -77,6 +69,12 @@ public class AuthService
 
     public async Task Logout(string refreshToken)
     {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            _logger.LogWarning("Refresh token inválido");
+            throw new UnauthorizedAccessException("Refresh token inválido");
+        }
+
         _logger.LogInformation(
             "Tentativa de logout para refresh token: {refreshToken}",
             refreshToken[..8]
@@ -123,9 +121,7 @@ public class AuthService
             throw new UnauthorizedAccessException("Refresh token inválido");
         }
 
-        var func = await _context.Funcionario
-                    .Where(f => f.Id.ToString() == redisUserId && f.IsActive)
-                    .FirstOrDefaultAsync();
+        var func = await _repository.GetByIdAsync(Guid.Parse(redisUserId));
 
         if (func == null)
         {

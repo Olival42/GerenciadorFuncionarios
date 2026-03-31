@@ -19,16 +19,22 @@ public static class RateLimitConfig
 
             var ip = context.HttpContext.Connection.RemoteIpAddress?.ToString();
 
-           logger.LogWarning(
-                "Rate limit excedido. IP: {IP} Endpoint: {Endpoint}",
-                ip,
-                context.HttpContext.Request.Path
-            );
+            logger.LogWarning(
+                 "Rate limit excedido. IP: {IP} Endpoint: {Endpoint}",
+                 ip,
+                 context.HttpContext.Request.Path
+             );
 
             context.HttpContext.Response.StatusCode = 429;
+            context.HttpContext.Response.ContentType = "application/json";
 
-            await context.HttpContext.Response.WriteAsJsonAsync(ApiResponse<ErrorResponse>
-                .Fail(new ErrorResponse("TOO_MANY_REQUESTS", "Rate limit exceeded.")));
+            var response = ApiResponse<ErrorResponse>.Fail(
+                new ErrorResponse("TOO_MANY_REQUESTS", "Rate limit exceeded.")
+            );
+
+            var json = System.Text.Json.JsonSerializer.Serialize(response);
+
+            await context.HttpContext.Response.WriteAsync(json);
         };
     }
 

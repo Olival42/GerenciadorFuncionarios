@@ -1,15 +1,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-COPY *.csproj ./
+COPY . .
+
 RUN dotnet restore
+RUN dotnet build -c Release --no-restore
 
-COPY . ./
-RUN dotnet publish -c Release -o out
+FROM build AS publish
+RUN dotnet publish -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-COPY --from=build /app/out .
-EXPOSE 8080
-
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "GerenciadorFuncionarios.dll"]

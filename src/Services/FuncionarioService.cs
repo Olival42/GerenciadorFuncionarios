@@ -2,8 +2,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using GerenciadorFuncionarios.Data;
 using GerenciadorFuncionarios.DTOs.Funcionario.Requests;
 using GerenciadorFuncionarios.DTOs.Funcionario.Responses;
 using GerenciadorFuncionarios.Models;
@@ -11,16 +9,20 @@ using GerenciadorFuncionarios.Shared.Responses;
 using Mapster;
 using GerenciadorFuncionarios.Exceptions;
 using BCrypt.Net;
+using GerenciadorFuncionarios.Adapters;
 
-public class FuncionarioService
+public class FuncionarioService : IFuncionarioService
 {
-    private readonly AppDbContext _context;
+    private readonly IFuncionarioRepository _funcRepository;
+
+    private readonly IDepartamentoRepository _deparRepository;
 
     private readonly ILogger<FuncionarioService> _logger;
 
-    public FuncionarioService(AppDbContext context, ILogger<FuncionarioService> logger)
+    public FuncionarioService(IFuncionarioRepository funcRepository, IDepartamentoRepository deparRepository, ILogger<FuncionarioService> logger)
     {
-        _context = context;
+        _funcRepository = funcRepository;
+        _deparRepository = deparRepository;
         _logger = logger;
     }
 
@@ -30,7 +32,7 @@ public class FuncionarioService
             "Tentativa de cadastro de funcionário. Email: {Email}",
             data.Email);
 
-        if (await _context.Funcionario.AnyAsync(f => f.CPF == data.CPF))
+        if (await _funcRepository.AnyByCPFAsync(data.CPF))
         {
             _logger.LogWarning(
                 "CPF já cadastrado. CPF: {CPF}",
@@ -39,7 +41,7 @@ public class FuncionarioService
             throw new CPFAlreadyExistsException("CPF já cadastrado para outro funcionário.");
         }
 
-        if (await _context.Funcionario.AnyAsync(f => f.Email == data.Email))
+        if (await _funcRepository.AnyByEmailAsync(data.Email))
         {
             _logger.LogWarning(
                 "Email já cadastrado. Email: {Email}",
@@ -48,9 +50,7 @@ public class FuncionarioService
             throw new EmailAlreadyExistsException("Email já cadastrado para outro funcionário.");
         }
 
-        var departamento = await _context.Departamento
-            .Where(d => d.Id == data.DepartamentoId && d.IsActive)
-            .FirstOrDefaultAsync();
+        var departamento = await _deparRepository.GetById(data.DepartamentoId);
 
         if (departamento == null)
         {
@@ -66,8 +66,7 @@ public class FuncionarioService
         func.PasswordHash = BCrypt.HashPassword(data.Password);
         func.DepartamentoId = departamento.Id;
 
-        _context.Funcionario.Add(func);
-        await _context.SaveChangesAsync();
+        await _funcRepository.Add(func);
 
         var dto = func.Adapt<ResponseFuncionarioDTO>();
 
@@ -81,10 +80,7 @@ public class FuncionarioService
 
     public async Task<ApiResponse<ResponseFuncionarioDTO>> ObterFuncionarioPorId(Guid id)
     {
-        var func = await _context.Funcionario
-            .Where(f => f.Id == id && f.IsActive)
-            .ProjectToType<ResponseFuncionarioDTO>()
-            .FirstOrDefaultAsync();
+        var func = await _funcRepository.GetByIdAsync(id);
 
         if (func == null)
         {
@@ -95,7 +91,7 @@ public class FuncionarioService
             throw new EntityNotFoundException("Funcionário não encontrado.");
         }
 
-        return ApiResponse<ResponseFuncionarioDTO>.Ok(func);
+        return ApiResponse<ResponseFuncionarioDTO>.Ok(func.Adapt<ResponseFuncionarioDTO>());
     }
 
     public async Task InativarPorId(Guid id)
@@ -104,9 +100,7 @@ public class FuncionarioService
             "Tentativa de inativação de funcionário. Id: {Id}",
             id);
 
-        var func = await _context.Funcionario
-            .Where(f => f.Id == id && f.IsActive)
-            .FirstOrDefaultAsync();
+        var func = await _funcRepository.GetByIdAsync(id);
 
         if (func == null)
         {
@@ -119,7 +113,7 @@ public class FuncionarioService
 
         func.IsActive = false;
 
-        await _context.SaveChangesAsync();
+        await _funcRepository.SaveChangesAsync();
 
         _logger.LogInformation(
             "Funcionário inativado. Id: {Id} Email: {Email}",
@@ -127,16 +121,13 @@ public class FuncionarioService
             func.Email);
     }
 
-    // atualizar função
     public async Task<ApiResponse<ResponseFuncionarioDTO>> Atualizar(Guid id, UpdateFuncionarioDTO data)
     {
         _logger.LogInformation(
             "Tentativa de atualização de funcionário. Id: {Id}",
             id);
 
-        var func = await _context.Funcionario
-            .Where(f => f.Id == id && f.IsActive)
-            .FirstOrDefaultAsync();
+        var func = await _funcRepository.GetByIdAsync(id);
 
         if (func == null)
         {
@@ -150,10 +141,22 @@ public class FuncionarioService
         if (data.Name is not null)
             func.Name = data.Name;
 
+        if (data.Email is not null)
+            func.Email = data.Email;
+
+        if (data.Password is not null)
+            func.PasswordHash = BCrypt.HashPassword(data.Password);
+
+        if (data.Role is not null)
+            func.Role = data.Role.Value;
+
+        if (data.CPF is not null)
+            func.CPF = data.CPF;
+
         if (data.Phone is not null)
             func.Phone = data.Phone;
 
-        await _context.SaveChangesAsync();
+        await _funcRepository.SaveChangesAsync();
 
         var dto = func.Adapt<ResponseFuncionarioDTO>();
 
@@ -171,9 +174,7 @@ public class FuncionarioService
             "Tentativa de atualização de departamento do funcionário. Id: {Id}",
             id);
 
-        var func = await _context.Funcionario
-            .Where(f => f.Id == id && f.IsActive)
-            .FirstOrDefaultAsync();
+        var func = await _funcRepository.GetByIdAsync(id);
 
         if (func == null)
         {
@@ -184,9 +185,7 @@ public class FuncionarioService
             throw new EntityNotFoundException("Funcionário não encontrado.");
         }
 
-        var departamento = await _context.Departamento
-            .Where(d => d.Id == data.DepartamentoId && d.IsActive)
-            .FirstOrDefaultAsync();
+        var departamento = await _deparRepository.GetById(data.DepartamentoId);
 
         if (departamento == null)
         {
@@ -199,7 +198,7 @@ public class FuncionarioService
 
         func.DepartamentoId = departamento.Id;
 
-        await _context.SaveChangesAsync();
+        await _funcRepository.SaveChangesAsync();
 
         var dto = func.Adapt<ResponseFuncionarioDTO>();
 
@@ -213,30 +212,7 @@ public class FuncionarioService
 
     public async Task<ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>> ObterTodosFuncionarios(int page, int pageSize, Guid? departamentoId)
     {
-        var query = _context.Funcionario
-            .Where(f => f.IsActive);
-
-        if (departamentoId.HasValue)
-        {
-            query = query.Where(f => f.DepartamentoId == departamentoId);
-        }
-
-        var totalItems = await query.CountAsync();
-
-        var items = await query
-            .OrderBy(f => f.Name)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ProjectToType<ResponseFuncionarioDTO>()
-            .ToListAsync();
-
-        var paginated = new PaginationResponse<ResponseFuncionarioDTO>
-        (
-            Items: items,
-            Page: page,
-            TotalItems: totalItems,
-            PageSize: pageSize
-        );
+        var paginated = await _funcRepository.GetAllAsync(page, pageSize, departamentoId);
 
         return ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>.Ok(paginated);
     }

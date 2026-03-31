@@ -2,24 +2,23 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using GerenciadorFuncionarios.Data;
 using GerenciadorFuncionarios.DTOs.Departamento.Requests;
 using GerenciadorFuncionarios.DTOs.Departamento.Response;
 using GerenciadorFuncionarios.Models;
 using GerenciadorFuncionarios.Shared.Responses;
 using Mapster;
 using GerenciadorFuncionarios.Exceptions;
+using GerenciadorFuncionarios.Adapters;
 
 public class DepartamentoService
 {
-    private readonly AppDbContext _context;
+    private readonly IDepartamentoRepository _repository;
 
     private readonly ILogger<DepartamentoService> _logger;
 
-    public DepartamentoService(AppDbContext context, ILogger<DepartamentoService> logger)
+    public DepartamentoService(IDepartamentoRepository repository, ILogger<DepartamentoService> logger)
     {
-        _context = context;
+        _repository = repository;
         _logger = logger;
     }
 
@@ -29,7 +28,7 @@ public class DepartamentoService
             "Tentativa de cadastro de departamento. Nome: {Name}",
             data.Name);
 
-        if (await _context.Departamento.AnyAsync(d => d.Name == data.Name))
+        if (await _repository.AnyByNameAsync(data.Name))
         {
             _logger.LogWarning(
                 "Departamento já cadastrado. Nome: {Name}",
@@ -40,8 +39,7 @@ public class DepartamentoService
 
         var departamento = data.Adapt<Departamento>();
 
-        _context.Departamento.Add(departamento);
-        await _context.SaveChangesAsync();
+        await _repository.Add(departamento);
 
         var dto = departamento.Adapt<ResponseDepartamentoDTO>();
 
@@ -55,10 +53,7 @@ public class DepartamentoService
 
     public async Task<ApiResponse<ResponseDepartamentoDTO>> ObterDepartamentoPorId(Guid id)
     {
-        var departamento = await _context.Departamento
-            .Where(d => d.Id == id && d.IsActive)
-            .ProjectToType<ResponseDepartamentoDTO>()
-            .FirstOrDefaultAsync();
+        var departamento = await _repository.GetById(id);
 
         if (departamento == null)
         {
@@ -69,7 +64,7 @@ public class DepartamentoService
             throw new EntityNotFoundException("Departamento não encontrado.");
         }
 
-        return ApiResponse<ResponseDepartamentoDTO>.Ok(departamento);
+        return ApiResponse<ResponseDepartamentoDTO>.Ok(departamento.Adapt<ResponseDepartamentoDTO>());
     }
 
     public async Task InativarDepartamento(Guid id)
@@ -78,9 +73,7 @@ public class DepartamentoService
             "Tentativa de inativação de departamento. Id: {Id}",
             id);
 
-        var departamento = await _context.Departamento
-            .Where(d => d.Id == id && d.IsActive)
-            .FirstOrDefaultAsync();
+        var departamento = await _repository.GetById(id);
 
         if (departamento == null)
         {
@@ -93,8 +86,7 @@ public class DepartamentoService
 
         departamento.IsActive = false;
 
-        _context.Departamento.Update(departamento);
-        await _context.SaveChangesAsync();
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation(
             "Departamento inativado. Id: {Id} Nome: {Name}",
@@ -104,23 +96,7 @@ public class DepartamentoService
 
     public async Task<ApiResponse<PaginationResponse<ResponseDepartamentoDTO>>> ObterTodosDepartamentos(int page, int pageSize)
     {
-        var totalItems = await _context.Departamento.CountAsync();
-
-        var items = await _context.Departamento
-            .Where(d => d.IsActive)
-            .OrderBy(d => d.Name)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(d => d.Adapt<ResponseDepartamentoDTO>())
-            .ToListAsync();
-
-        var paginated = new PaginationResponse<ResponseDepartamentoDTO>
-        (
-            Items: items,
-            Page: page,
-            TotalItems: totalItems,
-            PageSize: pageSize
-        );
+        var paginated = await _repository.GetAllAsync(page, pageSize);
 
         return ApiResponse<PaginationResponse<ResponseDepartamentoDTO>>.Ok(paginated);
     }

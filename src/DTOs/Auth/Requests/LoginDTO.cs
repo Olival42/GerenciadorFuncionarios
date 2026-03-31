@@ -2,12 +2,10 @@ namespace GerenciadorFuncionarios.DTOs.Auth.Requests;
 
 using System.ComponentModel.DataAnnotations;
 
-public record LoginDTO
-    (
+public record LoginDTO {
         [Required(ErrorMessage = "Email é obrigatório")]
-        string Email,
+        public required string Email { get; init; }
 
         [Required(ErrorMessage = "Senha é obrigatório")]
-        string Password
-    )
-{ }
+        public required string Password { get; init; }
+}

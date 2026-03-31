@@ -10,6 +10,9 @@ public class CPFValidAttribute : ValidationAttribute
 
 	protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
 	{
+		if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+			return ValidationResult.Success;
+
 		if(value is string str)
 		{
 			if (!CPFValid.IsValid(str))

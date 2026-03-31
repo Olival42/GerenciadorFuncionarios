@@ -6,15 +6,16 @@ using GerenciadorFuncionarios.DTOs.Funcionario.Responses;
 using GerenciadorFuncionarios.Services;
 using GerenciadorFuncionarios.Shared.Responses;
 using Microsoft.AspNetCore.Authorization;
+using GerenciadorFuncionarios.Adapters;
 
 [Produces("application/json")]
 [ApiController]
 [Route("api/funcionarios")]
 public class FuncionarioController : ControllerBase
 {
-    private readonly FuncionarioService _service;
+    private readonly IFuncionarioService _service;
 
-    public FuncionarioController(FuncionarioService service)
+    public FuncionarioController(IFuncionarioService service)
 	{
         _service = service;
 	}

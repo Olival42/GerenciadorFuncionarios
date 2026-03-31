@@ -1,8 +1,9 @@
 namespace GerenciadorFuncionarios.Services.Security;
 
 using System.Security.Claims;
+using GerenciadorFuncionarios.Adapters;
 
-public class UserContextService
+public class UserContextService : IUserContextService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 

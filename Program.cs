@@ -49,6 +49,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services
+    .AddRepositories()
     .AddServices()
     .AddSecurity()
     .AddCache();
@@ -80,9 +81,12 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    AppDbInitializer.Seed(db, logger);
+    if (app.Environment.EnvironmentName != "Testing")
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        AppDbInitializer.Seed(db, logger);
+    }
 }
 
 app.Run();
