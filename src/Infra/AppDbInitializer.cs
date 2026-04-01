@@ -16,7 +16,7 @@ public static class AppDbInitializer
             db.Database.Migrate();
         }
 
-        if (!db.Funcionario.Any(f => f.Role == Role.ADMIN))
+        if (!db.Funcionario.Any(f => f.Role == Role.GERENTE))
         {
             logger.LogInformation("Criando usuário administrador");
 
@@ -26,7 +26,7 @@ public static class AppDbInitializer
                 Name = "Administrador",
                 Phone = "000000000",
                 CPF = "00000000000",
-                Role = Role.ADMIN,
+                Role = Role.GERENTE,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
                 IsActive = true
             };

@@ -13,7 +13,7 @@ public class RegisterFuncionarioDTOTests
             Name = "João da Silva",
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -35,7 +35,7 @@ public class RegisterFuncionarioDTOTests
             Name = null!,
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -57,7 +57,7 @@ public class RegisterFuncionarioDTOTests
             Name = "João da Silva",
             Email = "joaoemail.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -79,7 +79,7 @@ public class RegisterFuncionarioDTOTests
             Name = "João da Silva",
             Email = "joao@email.com",
             Password = "Senha@1",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -101,7 +101,7 @@ public class RegisterFuncionarioDTOTests
             Name = "João da Silva",
             Email = "joao@email.com",
             Password = "Senha1123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -123,7 +123,7 @@ public class RegisterFuncionarioDTOTests
             Name = "João da Silva",
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "449999999",
             CPF = "52998224725",
         };
@@ -145,7 +145,7 @@ public class RegisterFuncionarioDTOTests
             Name = "João da Silva",
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224724",
         };

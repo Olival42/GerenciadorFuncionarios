@@ -533,7 +533,7 @@ public class FuncionarioServiceTests
             Name = "Admin",
             Email = "teste@email.com",
             Password = "123456",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             CPF = "12345678900",
             Phone = "44999999999",
         };
@@ -549,7 +549,7 @@ public class FuncionarioServiceTests
             CPF = "68714247097",
             Email = "teste@email.com",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             IsActive = true
         };
     }
@@ -567,7 +567,7 @@ public class FuncionarioServiceTests
                     Phone = "44999999999",
                     CPF = "68714247097",
                     Email = "teste@email.com",
-                    Role = Role.ADMIN,
+                    Role = Role.GERENTE,
                     IsActive = true
                 },
                 new ResponseFuncionarioDTO

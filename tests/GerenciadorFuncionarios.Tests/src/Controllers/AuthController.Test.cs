@@ -37,7 +37,7 @@ public class AuthControllerTests
             ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
             RefreshToken: "refresh_token",
             Email: "teste@exemplo.com",
-            Role: Role.ADMIN
+            Role: Role.GERENTE
         );
 
         _mockService.Setup(s => s.Login(
@@ -66,7 +66,7 @@ public class AuthControllerTests
                     ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
                     RefreshToken: "refresh_token",
                     Email: "teste@exemplo.com",
-                    Role: Role.ADMIN
+                    Role: Role.GERENTE
                 )
             ));
 
@@ -117,7 +117,7 @@ public class AuthControllerTests
             ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
             RefreshToken: "refresh_token",
             Email: "teste@exemplo.com",
-            Role: Role.ADMIN
+            Role: Role.GERENTE
         );
 
         _mockService.Setup(s => s.Refresh(refreshToken))
@@ -158,7 +158,7 @@ public class AuthControllerTests
             ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
             RefreshToken: refreshToken,
             Email: "teste@exemplo.com",
-            Role: Role.ADMIN
+            Role: Role.GERENTE
         );
 
         _mockService.Setup(s => s.Refresh(refreshToken))

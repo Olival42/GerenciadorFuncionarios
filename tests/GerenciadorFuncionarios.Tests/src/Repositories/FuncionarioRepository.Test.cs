@@ -392,7 +392,7 @@ public class FuncionarioRepositoryTests
             CPF = "68714247097",
             Email = "teste@email.com",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             IsActive = true
         };
     }

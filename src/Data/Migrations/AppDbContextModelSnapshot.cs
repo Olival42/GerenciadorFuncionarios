@@ -22,24 +22,6 @@ namespace GerenciadorFuncionarios.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Departamento", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("departamentos");
-                });
-
             modelBuilder.Entity("GerenciadorFuncionarios.Models.Produto", b =>
                 {
                     b.Property<Guid>("Id")
@@ -112,9 +94,6 @@ namespace GerenciadorFuncionarios.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("DepartamentoId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -129,23 +108,7 @@ namespace GerenciadorFuncionarios.Migrations
                     b.HasIndex("CPF")
                         .IsUnique();
 
-                    b.HasIndex("DepartamentoId");
-
                     b.HasDiscriminator().HasValue("Funcionario");
-                });
-
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Funcionario", b =>
-                {
-                    b.HasOne("GerenciadorFuncionarios.Models.Departamento", "Departamento")
-                        .WithMany("Funcionarios")
-                        .HasForeignKey("DepartamentoId");
-
-                    b.Navigation("Departamento");
-                });
-
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Departamento", b =>
-                {
-                    b.Navigation("Funcionarios");
                 });
 #pragma warning restore 612, 618
         }

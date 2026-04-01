@@ -15,7 +15,7 @@ public class FuncionarioMappingTests
             Name = "João da Silva",
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };

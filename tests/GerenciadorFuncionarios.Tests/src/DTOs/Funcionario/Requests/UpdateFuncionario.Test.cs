@@ -13,7 +13,7 @@ public class UpdateFuncionarioDTOTests
             Name = null!,
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -52,7 +52,7 @@ public class UpdateFuncionarioDTOTests
             Name = "a",
             Email = null!,
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -91,7 +91,7 @@ public class UpdateFuncionarioDTOTests
             Name = "nulls",
             Email = "joao@email.com",
             Password = null!,
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = "52998224725",
         };
@@ -186,7 +186,7 @@ public class UpdateFuncionarioDTOTests
             Name = "nulls",
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = null!,
             CPF = "52998224725",
         };
@@ -225,7 +225,7 @@ public class UpdateFuncionarioDTOTests
             Name = "nulls",
             Email = "joao@email.com",
             Password = "Senha@123",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             Phone = "44999999999",
             CPF = null!,
         };

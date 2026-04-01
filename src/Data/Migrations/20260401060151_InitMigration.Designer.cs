@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GerenciadorFuncionarios.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260331185130_InitMigration")]
+    [Migration("20260401060151_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -24,24 +24,6 @@ namespace GerenciadorFuncionarios.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Departamento", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("departamentos");
-                });
 
             modelBuilder.Entity("GerenciadorFuncionarios.Models.Produto", b =>
                 {
@@ -115,9 +97,6 @@ namespace GerenciadorFuncionarios.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("DepartamentoId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -132,23 +111,7 @@ namespace GerenciadorFuncionarios.Migrations
                     b.HasIndex("CPF")
                         .IsUnique();
 
-                    b.HasIndex("DepartamentoId");
-
                     b.HasDiscriminator().HasValue("Funcionario");
-                });
-
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Funcionario", b =>
-                {
-                    b.HasOne("GerenciadorFuncionarios.Models.Departamento", "Departamento")
-                        .WithMany("Funcionarios")
-                        .HasForeignKey("DepartamentoId");
-
-                    b.Navigation("Departamento");
-                });
-
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Departamento", b =>
-                {
-                    b.Navigation("Funcionarios");
                 });
 #pragma warning restore 612, 618
         }

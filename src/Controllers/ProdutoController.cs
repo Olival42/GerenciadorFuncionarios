@@ -33,7 +33,7 @@ public class ProdutoController : ControllerBase
         throw new NotImplementedException();
     }
 
-    [Authorize(Roles = "ADMIN,GERENTE")]
+    [Authorize(Roles = "GERENTE")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> InactiveById(Guid id)
     {

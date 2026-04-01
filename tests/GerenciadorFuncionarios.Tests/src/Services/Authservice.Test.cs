@@ -44,7 +44,7 @@ public class AuthServiceTests
             CPF = "68714247097",
             Email = "teste@email.com",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-            Role = GerenciadorFuncionarios.Enums.Role.ADMIN,
+            Role = GerenciadorFuncionarios.Enums.Role.GERENTE,
             IsActive = true
         };
     }

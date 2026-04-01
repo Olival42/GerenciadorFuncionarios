@@ -33,7 +33,7 @@ public class FuncionarioControllerTests
             Name = "Admin",
             Email = "teste@email.com",
             Password = "123456",
-            Role = Role.ADMIN,
+            Role = Role.GERENTE,
             CPF = "12345678900",
             Phone = "44999999999",
         };
@@ -66,7 +66,7 @@ public class FuncionarioControllerTests
 
         Assert.Equal(res.Name, apiResponse.Data!.Name);
         Assert.Equal(res.Email, apiResponse.Data.Email);
-        Assert.Equal(Role.ADMIN, apiResponse.Data.Role);
+        Assert.Equal(Role.GERENTE, apiResponse.Data.Role);
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class FuncionarioControllerTests
                     Phone = "44999999999",
                     CPF = "68714247097",
                     Email = "teste@email.com",
-                    Role = Role.ADMIN,
+                    Role = Role.GERENTE,
                     IsActive = true
                 },
                 new ResponseFuncionarioDTO

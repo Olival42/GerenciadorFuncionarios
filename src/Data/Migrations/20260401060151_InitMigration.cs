@@ -12,19 +12,6 @@ namespace GerenciadorFuncionarios.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "departamentos",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_departamentos", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Produto",
                 columns: table => new
                 {
@@ -52,17 +39,11 @@ namespace GerenciadorFuncionarios.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),
                     CPF = table.Column<string>(type: "text", nullable: true),
-                    DepartamentoId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Usuario", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Usuario_departamentos_DepartamentoId",
-                        column: x => x.DepartamentoId,
-                        principalTable: "departamentos",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -76,11 +57,6 @@ namespace GerenciadorFuncionarios.Migrations
                 table: "Usuario",
                 column: "CPF",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Usuario_DepartamentoId",
-                table: "Usuario",
-                column: "DepartamentoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Usuario_Email",
@@ -97,9 +73,6 @@ namespace GerenciadorFuncionarios.Migrations
 
             migrationBuilder.DropTable(
                 name: "Usuario");
-
-            migrationBuilder.DropTable(
-                name: "departamentos");
         }
     }
 }

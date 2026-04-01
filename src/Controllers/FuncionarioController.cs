@@ -19,7 +19,7 @@ public class FuncionarioController : ControllerBase
         _service = service;
     }
 
-    [Authorize(Roles = "ADMIN,GERENTE")]
+    [Authorize(Roles = "GERENTE")]
     [HttpPost("registrar")]
     public Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> Resgister([FromBody] RegisterFuncionarioDTO data)
     {
@@ -33,14 +33,14 @@ public class FuncionarioController : ControllerBase
         throw new NotImplementedException();
     }
 
-    [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "GERENTE")]
     [HttpDelete("{id}")]
     public Task<IActionResult> InactiveById(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    [Authorize(Roles = "ADMIN,GERENTE")]
+    [Authorize(Roles = "GERENTE")]
     [HttpPatch("{id}")]
     public Task<ActionResult<ApiResponse<ResponseFuncionarioDTO>>> UpdateFuncionario(Guid id, [FromBody] UpdateFuncionarioDTO data)
     {

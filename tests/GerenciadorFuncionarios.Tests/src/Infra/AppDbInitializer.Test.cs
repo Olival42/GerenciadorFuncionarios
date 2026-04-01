@@ -20,7 +20,7 @@ public class AppDbInitializerTests
 
         AppDbInitializer.Seed(context, logger);
 
-        var admin = context.Funcionario.FirstOrDefault(f => f.Role == Role.ADMIN);
+        var admin = context.Funcionario.FirstOrDefault(f => f.Role == Role.GERENTE);
         Assert.NotNull(admin);
         Assert.Equal("Administrador", admin.Name);
     }
@@ -40,8 +40,8 @@ public class AppDbInitializerTests
             Name = "Administrador",
             Phone = "000000000",
             CPF = "00000000000",
-            Role = Role.ADMIN,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+            Role = Role.GERENTE,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("GERENTE@123"),
             IsActive = true
         };
 
@@ -51,7 +51,7 @@ public class AppDbInitializerTests
         var mockLogger = new Mock<ILogger>();
         AppDbInitializer.Seed(context, mockLogger.Object);
 
-        var admins = context.Funcionario.Where(f => f.Role == Role.ADMIN).ToList();
+        var admins = context.Funcionario.Where(f => f.Role == Role.GERENTE).ToList();
         Assert.Single(admins);
     }
 }
