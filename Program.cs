@@ -1,13 +1,16 @@
-using GerenciadorFuncionarios.Data;
 using Microsoft.EntityFrameworkCore;
-using GerenciadorFuncionarios.Mappings;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using StackExchange.Redis;
-using GerenciadorFuncionarios.Exceptions;
-using GerenciadorFuncionarios.Infra;
 using GerenciadorFuncionarios.Hubs;
+using GerenciadorFuncionarios.Infrastructure.RateLimit;
+using GerenciadorFuncionarios.Web.ExceptionHandlers;
+using GerenciadorFuncionarios.Infrastructure.Security;
+using GerenciadorFuncionarios.Infrastructure.DependencyInjection;
+using GerenciadorFuncionarios.Infrastructure;
+using GerenciadorFuncionarios.Infrastructure.Mappings;
+using GerenciadorFuncionarios.Infrastructure.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
