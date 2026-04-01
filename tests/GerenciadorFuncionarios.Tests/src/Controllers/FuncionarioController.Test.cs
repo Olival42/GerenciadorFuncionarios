@@ -26,10 +26,9 @@ public class FuncionarioControllerTests
         };
     }
 
-    [Fact]
-    public async Task Register_Should_Return_Created_With_Valid_Data()
+    private  RegisterFuncionarioDTO Create_RegisterDto()
     {
-        var req = new RegisterFuncionarioDTO
+        return new RegisterFuncionarioDTO
         {
             Name = "Admin",
             Email = "teste@email.com",
@@ -37,15 +36,25 @@ public class FuncionarioControllerTests
             Role = Role.ADMIN,
             CPF = "12345678900",
             Phone = "44999999999",
-            DepartamentoId = Guid.NewGuid()
         };
+    }
 
-        var res = new ResponseFuncionarioDTO
+    private ResponseFuncionarioDTO Create_ResponseDto()
+    {
+        return new ResponseFuncionarioDTO
         {
             Id = Guid.NewGuid(),
             Name = "Admin",
             Email = "teste@email.com",
         };
+    }
+
+    [Fact]
+    public async Task Register_Should_Return_Created_With_Valid_Data()
+    {
+        var req = Create_RegisterDto();
+
+        var res = Create_ResponseDto();
 
         _mockService.Setup(s => s.RegistrarFuncionarioAsync(req))
             .ReturnsAsync(ApiResponse<ResponseFuncionarioDTO>.Ok(res));
@@ -63,23 +72,9 @@ public class FuncionarioControllerTests
     [Fact]
     public async Task Register_Should_Call_Service_RegistrarFuncionarioAsync()
     {
-        var req = new RegisterFuncionarioDTO
-        {
-            Name = "Admin",
-            Email = "teste@email.com",
-            Password = "123456",
-            Role = Role.ADMIN,
-            CPF = "12345678900",
-            Phone = "44999999999",
-            DepartamentoId = Guid.NewGuid()
-        };
+        var req = Create_RegisterDto();
 
-        var res = new ResponseFuncionarioDTO
-        {
-            Id = Guid.NewGuid(),
-            Name = "João Silva",
-            Email = "joao@empresa.com",
-        };
+        var res = Create_ResponseDto();
 
         _mockService.Setup(s => s.RegistrarFuncionarioAsync(req))
             .ReturnsAsync(ApiResponse<ResponseFuncionarioDTO>.Ok(res));
@@ -95,12 +90,7 @@ public class FuncionarioControllerTests
     public async Task GetFuncionarioById_Should_Return_Ok_With_Valid_Id()
     {
         var funcionarioId = Guid.NewGuid();
-        var responseDto = new ResponseFuncionarioDTO
-        {
-            Id = funcionarioId,
-            Name = "João Silva",
-            Email = "joao@empresa.com",
-        };
+        var responseDto = Create_ResponseDto();
 
         _mockService.Setup(s => s.ObterFuncionarioPorId(funcionarioId))
             .ReturnsAsync(ApiResponse<ResponseFuncionarioDTO>.Ok(responseDto));
@@ -130,12 +120,7 @@ public class FuncionarioControllerTests
     public async Task GetFuncionarioById_Should_Call_Service_ObterFuncionarioPorId()
     {
         var funcionarioId = Guid.NewGuid();
-        var responseDto = new ResponseFuncionarioDTO
-        {
-            Id = funcionarioId,
-            Name = "João Silva",
-            Email = "joao@empresa.com",
-        };
+        var responseDto = Create_ResponseDto();
 
         _mockService.Setup(s => s.ObterFuncionarioPorId(funcionarioId))
             .ReturnsAsync(ApiResponse<ResponseFuncionarioDTO>.Ok(responseDto));
@@ -192,12 +177,7 @@ public class FuncionarioControllerTests
             Name = "Admin",
         };
 
-        var res = new ResponseFuncionarioDTO
-        {
-            Id = id,
-            Name = "Admin",
-            Email = "teste@email.com",
-        };
+        var res = Create_ResponseDto();
 
         _mockService.Setup(s => s.Atualizar(id, req))
             .ReturnsAsync(ApiResponse<ResponseFuncionarioDTO>.Ok(res));
@@ -260,7 +240,6 @@ public class FuncionarioControllerTests
                     Phone = "44999999999",
                     CPF = "68714247097",
                     Email = "teste@email.com",
-                    DepartamentoId = Guid.NewGuid(),
                     Role = Role.ADMIN,
                     IsActive = true
                 },
@@ -271,7 +250,6 @@ public class FuncionarioControllerTests
                     Phone = "44888888888",
                     CPF = "78945612300",
                     Email = "rogerio@email.com",
-                    DepartamentoId = Guid.NewGuid(),
                     Role = Role.GERENTE,
                     IsActive = true
                 }
@@ -281,60 +259,10 @@ public class FuncionarioControllerTests
             2
         );
 
-        _mockService.Setup(s => s.ObterTodosFuncionarios(1, 10, null))
+        _mockService.Setup(s => s.ObterTodosFuncionarios(1, 10))
             .ReturnsAsync(ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>.Ok(mockResponse));
 
-        var result = await _controller.GetAllFuncionarios(null);
-
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var apiResponse = Assert.IsType<ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>>(okResult.Value);
-
-        Assert.True(apiResponse.Success);
-        Assert.Equal(2, apiResponse.Data!.Items.Count);
-        Assert.Equal("Admin", apiResponse.Data.Items[0].Name);
-        Assert.Equal("rogerio@email.com", apiResponse.Data.Items[1].Email);
-    }
-
-    [Fact]
-    public async Task GetAllFuncionarios_Should_Return_Ok_With_Filtered_DepartamentoId()
-    {
-        var departamentoId = Guid.NewGuid();
-        var mockResponse = new PaginationResponse<ResponseFuncionarioDTO>
-        (
-            new List<ResponseFuncionarioDTO>
-            {
-                new ResponseFuncionarioDTO
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Admin",
-                    Phone = "44999999999",
-                    CPF = "68714247097",
-                    Email = "teste@email.com",
-                    DepartamentoId = departamentoId,
-                    Role = Role.ADMIN,
-                    IsActive = true
-                },
-                new ResponseFuncionarioDTO
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "rogerio",
-                    Phone = "44888888888",
-                    CPF = "78945612300",
-                    Email = "rogerio@email.com",
-                    DepartamentoId = departamentoId,
-                    Role = Role.GERENTE,
-                    IsActive = true
-                }
-            },
-            1,
-            10,
-            2
-        );
-
-        _mockService.Setup(s => s.ObterTodosFuncionarios(1, 10, departamentoId))
-            .ReturnsAsync(ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>.Ok(mockResponse));
-
-        var result = await _controller.GetAllFuncionarios(departamentoId);
+        var result = await _controller.GetAllFuncionarios();
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         var apiResponse = Assert.IsType<ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>>(okResult.Value);
@@ -348,16 +276,14 @@ public class FuncionarioControllerTests
     [Fact]
     public async Task GetAllFuncionarios_Should_Call_Service_ObterTodosFuncionarios()
     {
-
-        _mockService.Setup(s => s.ObterTodosFuncionarios(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+        _mockService.Setup(s => s.ObterTodosFuncionarios(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(It.IsAny<ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>>());
 
-        var result = await _controller.GetAllFuncionarios(null);
+        var result = await _controller.GetAllFuncionarios();
 
         _mockService.Verify(s => s.ObterTodosFuncionarios(
             It.IsAny<int>(), 
-            It.IsAny<int>(), 
-            It.IsAny<Guid?>()),
+            It.IsAny<int>()),
             Times.Once());
     }
 }

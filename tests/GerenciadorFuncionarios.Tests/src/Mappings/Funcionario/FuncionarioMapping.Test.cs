@@ -18,7 +18,6 @@ public class FuncionarioMappingTests
             Role = Role.ADMIN,
             Phone = "44999999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var funcionario = dto.Adapt<Funcionario>();
@@ -41,7 +40,6 @@ public class FuncionarioMappingTests
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
             Phone = null!,
             CPF = "98765432100",
-            DepartamentoId = Guid.NewGuid(),
             Role = Role.FUNCIONARIO,
             IsActive = true
         };
@@ -53,7 +51,6 @@ public class FuncionarioMappingTests
         Assert.Equal(func.Email, dto.Email);
         Assert.Equal(func.Phone, dto.Phone);
         Assert.Equal(func.CPF, dto.CPF);
-        Assert.Equal(func.DepartamentoId, dto.DepartamentoId);
         Assert.Equal(func.Role, dto.Role);
         Assert.Equal(func.IsActive, dto.IsActive);
     }

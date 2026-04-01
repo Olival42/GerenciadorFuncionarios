@@ -14,7 +14,6 @@ using GerenciadorFuncionarios.Shared.Responses;
 public class FuncionarioServiceTests
 {
     private readonly Mock<IFuncionarioRepository> _mockFuncRepository;
-    private readonly Mock<IDepartamentoRepository> _mockDeparRepository;
     private readonly Mock<ILogger<FuncionarioService>> _mockLogger;
 
     private readonly FuncionarioService _funcService;
@@ -23,11 +22,9 @@ public class FuncionarioServiceTests
     {
         _mockLogger = new Mock<ILogger<FuncionarioService>>();
         _mockFuncRepository = new Mock<IFuncionarioRepository>();
-        _mockDeparRepository = new Mock<IDepartamentoRepository>();
 
         _funcService = new FuncionarioService(
             _mockFuncRepository.Object,
-            _mockDeparRepository.Object,
             _mockLogger!.Object
         );
     }
@@ -44,14 +41,6 @@ public class FuncionarioServiceTests
         _mockFuncRepository
             .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(new Departamento
-            {
-                Id = Guid.NewGuid(),
-                Name = "Departamento"
-            });
 
         var result = await _funcService.RegistrarFuncionarioAsync(dto);
 
@@ -97,29 +86,6 @@ public class FuncionarioServiceTests
     }
 
     [Fact]
-    public async Task RegistrarFuncionarioAsync_Should_Throw_When_Department_NotFound()
-    {
-        var dto = Create_RegisterDto();
-
-        _mockFuncRepository
-           .Setup(r => r.AnyByCPFAsync(It.IsAny<string>()))
-           .ReturnsAsync(false);
-
-        _mockFuncRepository
-            .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync(false);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync((Departamento?)null);
-
-        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _funcService.RegistrarFuncionarioAsync(dto));
-
-        Assert.Equal("Departamento não encontrado.", exception.Message);
-    }
-
-    [Fact]
     public async Task RegistrarFuncionarioAsync_Should_HashPassword()
     {
         var dto = Create_RegisterDto();
@@ -132,14 +98,6 @@ public class FuncionarioServiceTests
         _mockFuncRepository
             .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(new Departamento
-            {
-                Id = Guid.NewGuid(),
-                Name = "Departamento"
-            });
 
         _mockFuncRepository
             .Setup(r => r.Add(It.IsAny<Funcionario>()))
@@ -168,14 +126,6 @@ public class FuncionarioServiceTests
             .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
 
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(new Departamento
-            {
-                Id = funcDto.DepartamentoId,
-                Name = "Departamento"
-            });
-
         var result = await _funcService.RegistrarFuncionarioAsync(funcDto);
 
         Assert.NotNull(result);
@@ -186,7 +136,6 @@ public class FuncionarioServiceTests
         Assert.Equal(funcDto.Phone, result.Data!.Phone);
         Assert.Equal(funcDto.CPF, result.Data!.CPF);
         Assert.Equal(funcDto.Role, result.Data!.Role);
-        Assert.Equal(funcDto.DepartamentoId, result.Data!.DepartamentoId);
     }
 
     [Fact]
@@ -209,7 +158,6 @@ public class FuncionarioServiceTests
         Assert.Equal(func.Phone, result.Data!.Phone);
         Assert.Equal(func.CPF, result.Data!.CPF);
         Assert.Equal(func.Role, result.Data!.Role);
-        Assert.Equal(func.DepartamentoId, result.Data!.DepartamentoId);
         Assert.Equal(func.IsActive, result.Data!.IsActive);
     }
 
@@ -276,7 +224,6 @@ public class FuncionarioServiceTests
         Assert.Equal(func.Phone, result.Data!.Phone);
         Assert.Equal(func.CPF, result.Data!.CPF);
         Assert.Equal(func.Role, result.Data!.Role);
-        Assert.Equal(func.DepartamentoId, result.Data!.DepartamentoId);
         Assert.Equal(func.IsActive, result.Data!.IsActive);
     }
 
@@ -359,189 +306,15 @@ public class FuncionarioServiceTests
     }
 
     [Fact]
-    public async Task AtualizarDepartamento_Should_UpdateDepartamento_WhenValid()
-    {
-        var func = Create_Funcionario();
-
-        var novoDepartamento = Create_Departamento();
-
-        var request = new UpdateDepartamentoFuncionario(novoDepartamento.Id);
-
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(func);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(novoDepartamento);
-
-        var result = await _funcService.AtualizarDepartamento(func.Id, request);
-
-        Assert.Equal(novoDepartamento.Id, func.DepartamentoId);
-
-        Assert.Equal(novoDepartamento.Id, result.Data!.DepartamentoId);
-    }
-
-    [Fact]
-    public async Task AtualizarDepartamento_Should_CallSaveChanges_WhenValid()
-    {
-        var func = Create_Funcionario();
-        var depar = Create_Departamento();
-
-        var dto = new UpdateDepartamentoFuncionario(depar.Id);
-
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(func);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(depar);
-
-        var result = await _funcService.AtualizarDepartamento(func.Id, dto);
-
-        Assert.NotNull(result);
-        Assert.True(result.Success);
-
-        Assert.Equal(depar.Id, func.DepartamentoId);
-        Assert.Equal(depar.Id, result.Data!.DepartamentoId);
-
-        _mockFuncRepository.Verify(
-            r => r.SaveChangesAsync(),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task AtualizarDepartamento_Should_Throw_WhenFuncionarioNotFound()
-    {
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync((Funcionario?)null);
-
-        var dto = new UpdateDepartamentoFuncionario(Guid.NewGuid());
-
-        var ex = await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _funcService.AtualizarDepartamento(Guid.NewGuid(), dto));
-
-        Assert.Equal("Funcionário não encontrado.", ex.Message);
-    }
-
-    [Fact]
-    public async Task AtualizarDepartamento_Should_Throw_WhenDepartamentoNotFound()
-    {
-        var func = Create_Funcionario();
-
-        var dto = new UpdateDepartamentoFuncionario(Guid.NewGuid());
-
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(func);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync((Departamento?)null);
-
-        var ex = await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _funcService.AtualizarDepartamento(Guid.NewGuid(), dto));
-
-        Assert.Equal("Departamento não encontrado.", ex.Message);
-    }
-
-    [Fact]
-    public async Task AtualizarDepartamento_Should_CallFuncionarioRepository_WithCorrectId()
-    {
-        var func = Create_Funcionario();
-
-        var dto = new UpdateDepartamentoFuncionario(Guid.NewGuid());
-
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(func);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(new Departamento { Id = dto.DepartamentoId, Name = "Departamento" });
-
-        await _funcService.AtualizarDepartamento(func.Id, dto);
-
-        _mockFuncRepository.Verify(
-            r => r.GetByIdAsync(It.IsAny<Guid>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task AtualizarDepartamento_Should_CallDepartamentoRepository_WithCorrectId()
-    {
-        var depar = Create_Departamento();
-        var func = Create_Funcionario();
-
-        var dto = new UpdateDepartamentoFuncionario(Guid.NewGuid());
-
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(func);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync(depar);
-
-        await _funcService.AtualizarDepartamento(Guid.NewGuid(), dto);
-
-        _mockDeparRepository.Verify(
-            r => r.GetById(It.IsAny<Guid>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task AtualizarDepartamento_Should_NotCallSaveChanges_WhenFuncionarioNotFound()
-    {
-        var dto = new UpdateDepartamentoFuncionario(Guid.NewGuid());
-
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync((Funcionario?)null);
-
-        var ex = await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _funcService.AtualizarDepartamento(Guid.NewGuid(), dto));
-
-        _mockFuncRepository.Verify(
-            r => r.SaveChangesAsync(),
-            Times.Never);
-    }
-
-    [Fact]
-    public async Task AtualizarDepartamento_Should_NotCallSaveChanges_WhenDepartamentoNotFound()
-    {
-        var func = Create_Funcionario();
-
-        var dto = new UpdateDepartamentoFuncionario(Guid.NewGuid());
-
-        _mockFuncRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(func);
-
-        _mockDeparRepository
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .ReturnsAsync((Departamento?)null);
-
-        var ex = await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _funcService.AtualizarDepartamento(Guid.NewGuid(), dto));
-
-        _mockFuncRepository.Verify(
-            r => r.SaveChangesAsync(),
-            Times.Never);
-    }
-
-    [Fact]
     public async Task ObterTodosFuncionarios_Should_ReturnPaginatedResult_WhenValid()
     {
         var paginated = Create_Paginated();
 
         _mockFuncRepository
-            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(paginated);
 
-        var result = await _funcService.ObterTodosFuncionarios(1, 10, null);
+        var result = await _funcService.ObterTodosFuncionarios(1, 10);
 
         Assert.NotNull(result);
         Assert.Equal(
@@ -555,46 +328,29 @@ public class FuncionarioServiceTests
         var paginated = Create_Paginated();
 
         _mockFuncRepository
-            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(paginated);
 
-        var result = await _funcService.ObterTodosFuncionarios(1, 10, null);
+        var result = await _funcService.ObterTodosFuncionarios(1, 10);
 
         _mockFuncRepository.Verify(
-            r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid?>()),
+            r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()),
             Times.Once);
     }
 
     [Fact]
     public async Task ObterTodosFuncionarios_Should_CallRepository_WithCorrectParams()
     {
-        var depar = Create_Departamento();
-        var paginated = Create_Paginated(depar.Id);
-
-        _mockFuncRepository
-            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid?>()))
-            .ReturnsAsync(paginated);
-
-        var result = await _funcService.ObterTodosFuncionarios(1, 10, depar.Id);
-
-        _mockFuncRepository.Verify(
-            r => r.GetAllAsync(1, 10, depar.Id),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task ObterTodosFuncionarios_Should_Work_WhenDepartamentoIdNull()
-    {
         var paginated = Create_Paginated();
 
         _mockFuncRepository
-            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(paginated);
 
-        var result = await _funcService.ObterTodosFuncionarios(1, 10, null);
+        var result = await _funcService.ObterTodosFuncionarios(1, 10);
 
         _mockFuncRepository.Verify(
-            r => r.GetAllAsync(1, 10, null),
+            r => r.GetAllAsync(1, 10),
             Times.Once);
     }
 
@@ -604,10 +360,10 @@ public class FuncionarioServiceTests
         var paginated = Create_Paginated();
 
         _mockFuncRepository
-            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(paginated);
 
-        var result = await _funcService.ObterTodosFuncionarios(1, 10, null);
+        var result = await _funcService.ObterTodosFuncionarios(1, 10);
 
         Assert.True(result.Success);
     }
@@ -780,7 +536,6 @@ public class FuncionarioServiceTests
             Role = Role.ADMIN,
             CPF = "12345678900",
             Phone = "44999999999",
-            DepartamentoId = Guid.NewGuid()
         };
     }
 
@@ -794,25 +549,13 @@ public class FuncionarioServiceTests
             CPF = "68714247097",
             Email = "teste@email.com",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-            DepartamentoId = Guid.NewGuid(),
             Role = Role.ADMIN,
             IsActive = true
         };
     }
 
-    private Departamento Create_Departamento()
+    private PaginationResponse<ResponseFuncionarioDTO> Create_Paginated()
     {
-        return new Departamento
-        {
-            Id = Guid.NewGuid(),
-            Name = "Departamento"
-        };
-    }
-
-    private PaginationResponse<ResponseFuncionarioDTO> Create_Paginated(Guid? departamentoId = null)
-    {
-        departamentoId ??= Guid.NewGuid();
-
         return new PaginationResponse<ResponseFuncionarioDTO>
         (
             new List<ResponseFuncionarioDTO>
@@ -824,7 +567,6 @@ public class FuncionarioServiceTests
                     Phone = "44999999999",
                     CPF = "68714247097",
                     Email = "teste@email.com",
-                    DepartamentoId = departamentoId.Value,
                     Role = Role.ADMIN,
                     IsActive = true
                 },
@@ -835,7 +577,6 @@ public class FuncionarioServiceTests
                     Phone = "44888888888",
                     CPF = "78945612300",
                     Email = "rogerio@email.com",
-                    DepartamentoId = departamentoId.Value,
                     Role = Role.GERENTE,
                     IsActive = true
                 }

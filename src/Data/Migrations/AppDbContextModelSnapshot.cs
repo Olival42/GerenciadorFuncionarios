@@ -40,6 +40,36 @@ namespace GerenciadorFuncionarios.Migrations
                     b.ToTable("departamentos");
                 });
 
+            modelBuilder.Entity("GerenciadorFuncionarios.Models.Produto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Produto");
+                });
+
             modelBuilder.Entity("GerenciadorFuncionarios.Models.Usuario", b =>
                 {
                     b.Property<Guid>("Id")

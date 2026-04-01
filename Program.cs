@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using StackExchange.Redis;
 using GerenciadorFuncionarios.Exceptions;
 using GerenciadorFuncionarios.Infra;
+using GerenciadorFuncionarios.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
         DataErrorHandler.OnException(context);
 });
 
+builder.Services.AddSignalR();
+
 builder.Services
     .AddRepositories()
     .AddServices()
@@ -78,6 +81,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<EstoqueHub>("/estoqueHub");
 
 using (var scope = app.Services.CreateScope())
 {

@@ -16,7 +16,6 @@ public class RegisterFuncionarioDTOTests
             Role = Role.ADMIN,
             Phone = "44999999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var context = new ValidationContext(dto);
@@ -39,7 +38,6 @@ public class RegisterFuncionarioDTOTests
             Role = Role.ADMIN,
             Phone = "44999999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var context = new ValidationContext(dto);
@@ -62,7 +60,6 @@ public class RegisterFuncionarioDTOTests
             Role = Role.ADMIN,
             Phone = "44999999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var context = new ValidationContext(dto);
@@ -85,7 +82,6 @@ public class RegisterFuncionarioDTOTests
             Role = Role.ADMIN,
             Phone = "44999999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var context = new ValidationContext(dto);
@@ -108,7 +104,6 @@ public class RegisterFuncionarioDTOTests
             Role = Role.ADMIN,
             Phone = "44999999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var context = new ValidationContext(dto);
@@ -131,7 +126,6 @@ public class RegisterFuncionarioDTOTests
             Role = Role.ADMIN,
             Phone = "449999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var context = new ValidationContext(dto);
@@ -154,7 +148,6 @@ public class RegisterFuncionarioDTOTests
             Role = Role.ADMIN,
             Phone = "44999999999",
             CPF = "52998224724",
-            DepartamentoId = Guid.NewGuid()
         };
 
         var context = new ValidationContext(dto);
@@ -164,38 +157,6 @@ public class RegisterFuncionarioDTOTests
 
         Assert.False(isValid);
         Assert.Contains(results, r => r.ErrorMessage == "CPF é inválido.");
-    }
-
-    [Fact]
-    public void Should_Return_Error_When_DepartamentoId_Empty()
-    {
-        var dto = new RegisterFuncionarioDTO
-        {
-            Name = "João da Silva",
-            Email = "joao@email.com",
-            Password = "Senha@123",
-            Role = Role.ADMIN,
-            Phone = "44999999999",
-            CPF = "52998224725",
-            DepartamentoId = Guid.Empty
-        };
-
-        var context = new ValidationContext(dto);
-        var results = new List<ValidationResult>();
-
-        bool isValid = Validator.TryValidateObject(dto, context, results, true);
-
-        if (dto.DepartamentoId == Guid.Empty)
-        {
-            results.Add(new ValidationResult(
-                "Departamento é obrigatório",
-                new[] { nameof(dto.DepartamentoId) }
-            ));
-            isValid = false;
-        }
-
-        Assert.False(isValid);
-        Assert.Contains(results, r => r.MemberNames.Contains("DepartamentoId"));
     }
 
     [Fact]
@@ -209,7 +170,6 @@ public class RegisterFuncionarioDTOTests
             Role = (Role)999,
             Phone = "44999999999",
             CPF = "52998224725",
-            DepartamentoId = Guid.Empty
         };
 
         var validationResults = new List<ValidationResult>();

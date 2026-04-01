@@ -54,6 +54,11 @@ public class GlobalErrorHandler : IExceptionFilter
                 new ErrorResponse("ACCESS_UNAUTHORIZED", ex.Message)
             ),
 
+            InvalidOperationException ex => (
+                StatusCodes.Status400BadRequest,
+                new ErrorResponse("INVALID_OPERATION", ex.Message)
+            ),
+
             Exception ex => (
                 StatusCodes.Status500InternalServerError,
                 new ErrorResponse("INTERNAL_SERVER_ERROR", ex.Message)

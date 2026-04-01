@@ -1,155 +1,45 @@
 namespace GerenciadorFuncionarios.Services;
 
-using System.Threading.Tasks;
-using GerenciadorFuncionarios.Shared.Responses;
-using BCrypt.Net;
+using GerenciadorFuncionarios.Adapters;
 using GerenciadorFuncionarios.DTOs.Auth.Requests;
 using GerenciadorFuncionarios.DTOs.Auth.Responses;
-using GerenciadorFuncionarios.Exceptions;
-using GerenciadorFuncionarios.Adapters;
+using GerenciadorFuncionarios.Shared.Responses;
+using Microsoft.Extensions.Logging;
 
 public class AuthService : IAuthService
 {
-
     private readonly ILogger<AuthService> _logger;
     private readonly IFuncionarioRepository _repository;
     private readonly IJwtService _jwtService;
     private readonly IRedisService _redis;
     private readonly IUserContextService _userContext;
-    public AuthService(IFuncionarioRepository repository, IJwtService jwtService, IRedisService redisService, IUserContextService userContext, ILogger<AuthService> logger)
+
+    public AuthService(
+        IFuncionarioRepository repository,
+        IJwtService jwtService,
+        IRedisService redisService,
+        IUserContextService userContext,
+        ILogger<AuthService> logger)
     {
-        _jwtService = jwtService;
         _repository = repository;
+        _jwtService = jwtService;
         _redis = redisService;
         _userContext = userContext;
         _logger = logger;
     }
 
-    public async Task<ApiResponse<TokenResponseDTO>> Login(LoginDTO data)
+    public Task<ApiResponse<TokenResponseDTO>> Login(LoginDTO data)
     {
-        _logger.LogInformation(
-            "Tentativa de login para Email: {Email}",
-            data.Email
-        );
-
-        var func = await _repository.GetByEmail(data.Email);
-
-        _logger.LogDebug(
-            "Funcionario encontrado. Id: {Id} Email: {Email}",
-            func?.Id,
-            func?.Email);
-
-        if (func == null || !BCrypt.Verify(data.Password, func!.PasswordHash))
-        {
-            _logger.LogWarning("Credenciais inválidas");
-            throw new BadCredentialsException("Credenciais inválidas.");
-        }
-
-        var (accessToken, accessExpiresAt) = _jwtService.GenerateAccessToken(func);
-        var refreshToken = _jwtService.GenerateRefreshToken(func);
-
-        await _redis.SetAsync($"refresh:{refreshToken}", func.Id.ToString(), TimeSpan.FromDays(7));
-
-        var dto = new TokenResponseDTO(
-            AccessToken: accessToken,
-            ExpiresAt: accessExpiresAt,
-            RefreshToken: refreshToken,
-            Email: func.Email,
-            Role: func.Role
-        );
-
-        _logger.LogInformation(
-            "Login realizado com sucesso. UserId: {UserId} Email: {Email}",
-            func.Id,
-            func.Email
-        );
-
-        return ApiResponse<TokenResponseDTO>.Ok(dto);
+        throw new NotImplementedException();
     }
 
-    public async Task Logout(string refreshToken)
+    public Task Logout(string refreshToken)
     {
-        if (string.IsNullOrWhiteSpace(refreshToken))
-        {
-            _logger.LogWarning("Refresh token inválido");
-            throw new UnauthorizedAccessException("Refresh token inválido");
-        }
-
-        _logger.LogInformation(
-            "Tentativa de logout para refresh token: {refreshToken}",
-            refreshToken[..8]
-        );
-
-        var redisUserId = await _redis.GetAsync($"refresh:{refreshToken}");
-        var contextUserId = _userContext.GetUserId();
-
-        _logger.LogInformation(
-            "Ids coletados: redis={redisUserId} context={contextUserId}",
-            redisUserId,
-            contextUserId);
-
-        if (redisUserId == null || contextUserId?.ToString() != redisUserId)
-        {
-            _logger.LogWarning("Refresh token inválido");
-            throw new UnauthorizedAccessException("Refresh token inválido");
-        }
-
-        await _redis.DeleteAsync($"refresh:{refreshToken}");
-
-        _logger.LogInformation(
-            "Logout realizado com sucesso. UserId: {UserId}",
-            contextUserId
-        );
+        throw new NotImplementedException();
     }
 
-    public async Task<ApiResponse<TokenResponseDTO>> Refresh(string refreshToken)
+    public Task<ApiResponse<TokenResponseDTO>> Refresh(string refreshToken)
     {
-        _logger.LogInformation(
-            "Tentativa de refresh para refresh token: {refreshToken}",
-            refreshToken[..8]
-        );
-
-        var redisUserId = await _redis.GetAsync($"refresh:{refreshToken}");
-
-        _logger.LogInformation(
-            "Id coletado: redis={redisUserId}",
-            redisUserId);
-
-        if (redisUserId == null)
-        {
-            _logger.LogWarning("Refresh token inválido");
-            throw new UnauthorizedAccessException("Refresh token inválido");
-        }
-
-        var func = await _repository.GetByIdAsync(Guid.Parse(redisUserId));
-
-        if (func == null)
-        {
-            _logger.LogWarning("Refresh token inválido");
-            throw new UnauthorizedAccessException("Refresh token inválido");
-        }
-
-        var (accessToken, accessExpiresAt) = _jwtService.GenerateAccessToken(func);
-        var newRefreshToken = _jwtService.GenerateRefreshToken(func);
-
-        await _redis.SetAsync($"refresh:{newRefreshToken}", func.Id.ToString(), TimeSpan.FromDays(7));
-
-        await _redis.DeleteAsync($"refresh:{refreshToken}");
-
-        var dto = new TokenResponseDTO(
-            AccessToken: accessToken,
-            ExpiresAt: accessExpiresAt,
-            RefreshToken: newRefreshToken,
-            Email: func.Email,
-            Role: func.Role
-        );
-
-        _logger.LogInformation(
-            "Access token renovado com sucesso. UserId: {UserId}",
-            func.Id
-        );
-
-
-        return ApiResponse<TokenResponseDTO>.Ok(dto);
+        throw new NotImplementedException();
     }
 }

@@ -31,8 +31,5 @@ public record RegisterFuncionarioDTO {
     [Required(ErrorMessage = "CPF é obrigatório")]
     [CPFValid]
     public required string CPF { get; init; }
-
-    [Required(ErrorMessage = "Departamento é obrigatório")]
-    public required Guid DepartamentoId { get; init; }
 }
 

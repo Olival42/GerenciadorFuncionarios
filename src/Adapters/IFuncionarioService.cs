@@ -10,7 +10,6 @@ public interface IFuncionarioService
     Task<ApiResponse<ResponseFuncionarioDTO>> ObterFuncionarioPorId(Guid id);
     Task InativarPorId(Guid id);
     Task<ApiResponse<ResponseFuncionarioDTO>> Atualizar(Guid id, UpdateFuncionarioDTO data);
-    Task<ApiResponse<ResponseFuncionarioDTO>> AtualizarDepartamento(Guid id, UpdateDepartamentoFuncionario data);
-    Task<ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>> ObterTodosFuncionarios(int page, int pageSize, Guid? departamentoId);
+    Task<ApiResponse<PaginationResponse<ResponseFuncionarioDTO>>> ObterTodosFuncionarios(int page, int pageSize);
 
 }

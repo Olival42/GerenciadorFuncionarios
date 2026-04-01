@@ -12,18 +12,18 @@ public class RedisService : IRedisService
         _db = redis.GetDatabase();
     }
 
-    public async Task SetAsync(string key, string value, TimeSpan expiry)
+    public Task SetAsync(string key, string value, TimeSpan expiry)
     {
-        await _db.StringSetAsync(key, value, expiry);
+        throw new NotImplementedException();
     }
 
-    public async Task<string?> GetAsync(string key)
+    public Task<string?> GetAsync(string key)
     {
-        return await _db.StringGetAsync(key);
+        throw new NotImplementedException();
     }
 
-    public async Task DeleteAsync(string key)
+    public Task DeleteAsync(string key)
     {
-        await _db.KeyDeleteAsync(key);
+        throw new NotImplementedException();
     }
 }

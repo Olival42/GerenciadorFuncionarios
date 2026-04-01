@@ -9,8 +9,8 @@ public class AppDbContext : DbContext
         : base(options) { }
 
     public DbSet<Funcionario> Funcionario { get; set; }
-    public DbSet<Departamento> Departamento { get; set; }
     public DbSet<Usuario> Usuario { get; set; }
+    public DbSet<Produto> Produto { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -13,5 +13,5 @@ public interface IFuncionarioRepository
     Task<bool> AnyByEmailAsync(string email);
     Task SaveChangesAsync();
     Task<PaginationResponse<ResponseFuncionarioDTO>> GetAllAsync(
-        int page, int pageSize, Guid? departamentoId = null);
+        int page, int pageSize);
 }

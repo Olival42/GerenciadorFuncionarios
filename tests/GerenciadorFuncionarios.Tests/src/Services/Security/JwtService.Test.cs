@@ -352,7 +352,6 @@ public class JwtServiceTests
             CPF = "68714247097",
             Email = "teste@email.com",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-            DepartamentoId = Guid.NewGuid(),
             Role = Role.ADMIN,
             IsActive = true
         };

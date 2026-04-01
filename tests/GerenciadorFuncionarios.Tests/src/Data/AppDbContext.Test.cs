@@ -32,7 +32,6 @@ namespace GerenciadorFuncionarios.Tests.Data
 
             using var context = new AppDbContext(options);
             Assert.NotNull(context.Funcionario);
-            Assert.NotNull(context.Departamento);
             Assert.NotNull(context.Usuario);
         }
 
@@ -51,7 +50,6 @@ namespace GerenciadorFuncionarios.Tests.Data
                     CPF = "68714247097",
                     Email = "teste@email.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-                    DepartamentoId = Guid.NewGuid(),
                     Role = Role.ADMIN,
                     IsActive = true
                 };

@@ -4,13 +4,13 @@ using GerenciadorFuncionarios.Infra;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.DependencyInjection;
 using GerenciadorFuncionarios.Services;
-using GerenciadorFuncionarios.Ports;
 using GerenciadorFuncionarios.Adapters;
 using GerenciadorFuncionarios.Services.Security;
 using GerenciadorFuncionarios.Data;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using Moq;
+using GerenciadorFuncionarios.Repositories;
 
 public class DependencyInjectionTests
 {
@@ -49,8 +49,6 @@ public class DependencyInjectionTests
 
         var provider = services.BuildServiceProvider();
 
-        Assert.NotNull(provider.GetService<DepartamentoService>());
-
         Assert.IsType<FuncionarioService>(
              provider.GetService<IFuncionarioService>()
          );
@@ -71,10 +69,6 @@ public class DependencyInjectionTests
 
         Assert.IsType<FuncionarioRepository>(
             provider.GetService<IFuncionarioRepository>()
-        );
-
-        Assert.IsType<DepartamentoRepository>(
-            provider.GetService<IDepartamentoRepository>()
         );
     }
 

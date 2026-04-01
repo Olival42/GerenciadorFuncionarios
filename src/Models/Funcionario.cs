@@ -13,10 +13,5 @@ public class Funcionario : Usuario
 
     public required string CPF { get; set; }
 
-    public Guid? DepartamentoId { get; set; }
-
     public bool IsActive { get; set; } = true;
-
-    [ForeignKey(nameof(DepartamentoId))]
-    public Departamento? Departamento {  get; set; }
 }

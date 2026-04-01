@@ -10,7 +10,6 @@ public record ResponseFuncionarioDTO
     public string Phone { get; init; } = default!;
     public string Email { get; init; } = default!;
     public string CPF { get; init; } = default!;
-    public Guid DepartamentoId { get; init; }
     public Role Role { get; init; }
     public bool IsActive { get; init; }
 

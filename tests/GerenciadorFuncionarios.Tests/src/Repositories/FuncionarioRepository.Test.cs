@@ -1,9 +1,9 @@
 using Xunit;
-using GerenciadorFuncionarios.Ports;
 using Microsoft.EntityFrameworkCore;
 using GerenciadorFuncionarios.Data;
 using GerenciadorFuncionarios.Models;
 using GerenciadorFuncionarios.Enums;
+using GerenciadorFuncionarios.Repositories;
 
 public class FuncionarioRepositoryTests
 {
@@ -199,7 +199,7 @@ public class FuncionarioRepositoryTests
         await _context.Funcionario.AddRangeAsync(funcs);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetAllAsync(page: 1, pageSize: 2, departamentoId: null);
+        var result = await _repository.GetAllAsync(page: 1, pageSize: 2);
 
         Assert.Equal(2, result.Items.Count);
         Assert.Equal(3, result.TotalItems);
@@ -221,7 +221,7 @@ public class FuncionarioRepositoryTests
         await _context.Funcionario.AddRangeAsync(funcs);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetAllAsync(page: 1, pageSize: 2, departamentoId: null);
+        var result = await _repository.GetAllAsync(page: 1, pageSize: 2);
 
         Assert.Equal(2, result.Items.Count);
         Assert.Equal(2, result.TotalItems);
@@ -253,55 +253,6 @@ public class FuncionarioRepositoryTests
     }
 
     [Fact]
-    public async Task GetAllAsync_Should_Return_Paginated_Funcionarios_By_DepartamentoId()
-    {
-        var departamentoId = Guid.NewGuid();
-
-        var funcs = new List<Funcionario>
-        {
-            Create_Funcionario(),
-            Create_Funcionario(),
-            Create_Funcionario()
-        };
-
-        funcs[0].DepartamentoId = departamentoId;
-        funcs[1].DepartamentoId = departamentoId;
-
-        await _context.Funcionario.AddRangeAsync(funcs);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetAllAsync(page: 1, pageSize: 2, departamentoId: departamentoId);
-
-        Assert.Equal(2, result.Items.Count);
-        Assert.Equal(2, result.TotalItems);
-        Assert.Equal(1, result.Page);
-        Assert.Equal(2, result.PageSize);
-    }
-
-    [Fact]
-    public async Task GetAllAsync_Should_Return_PaginatedNull_Funcionarios_By_DepartamentoId()
-    {
-        var departamentoId = Guid.NewGuid();
-
-        var funcs = new List<Funcionario>
-        {
-            Create_Funcionario(),
-            Create_Funcionario(),
-            Create_Funcionario()
-        };
-
-        await _context.Funcionario.AddRangeAsync(funcs);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetAllAsync(page: 1, pageSize: 2, departamentoId: departamentoId);
-
-        Assert.Empty(result.Items);
-        Assert.Equal(0, result.TotalItems);
-        Assert.Equal(1, result.Page);
-        Assert.Equal(2, result.PageSize);
-    }
-
-    [Fact]
     public async Task GetAllAsync_Should_Return_SecondPage_Correctly()
     {
         var funcs = new List<Funcionario>
@@ -315,7 +266,7 @@ public class FuncionarioRepositoryTests
         await _context.Funcionario.AddRangeAsync(funcs);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetAllAsync(page: 2, pageSize: 2, departamentoId: null);
+        var result = await _repository.GetAllAsync(page: 2, pageSize: 2);
 
         Assert.Equal(2, result.Items.Count);
         Assert.Equal(4, result.TotalItems);
@@ -337,7 +288,7 @@ public class FuncionarioRepositoryTests
         await _context.Funcionario.AddRangeAsync(funcs);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetAllAsync(page: 3, pageSize: 2, departamentoId: null);
+        var result = await _repository.GetAllAsync(page: 3, pageSize: 2);
 
         Assert.Empty(result.Items);
         Assert.Equal(4, result.TotalItems);
@@ -420,7 +371,6 @@ public class FuncionarioRepositoryTests
         Assert.Equal(func1.CPF, dto1.CPF);
         Assert.Equal(func1.IsActive, dto1.IsActive);
         Assert.Equal(func1.Role, dto1.Role);
-        Assert.Equal(func1.DepartamentoId, dto1.DepartamentoId);
         Assert.Equal(func1.Phone, dto1.Phone);
 
         Assert.Equal(func2.Id, dto2.Id);
@@ -429,7 +379,6 @@ public class FuncionarioRepositoryTests
         Assert.Equal(func2.CPF, dto2.CPF);
         Assert.Equal(func2.IsActive, dto2.IsActive);
         Assert.Equal(func2.Role, dto2.Role);
-        Assert.Equal(func2.DepartamentoId, dto2.DepartamentoId);
         Assert.Equal(func2.Phone, dto2.Phone);
     }
 
@@ -443,7 +392,6 @@ public class FuncionarioRepositoryTests
             CPF = "68714247097",
             Email = "teste@email.com",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
-            DepartamentoId = Guid.NewGuid(),
             Role = Role.ADMIN,
             IsActive = true
         };

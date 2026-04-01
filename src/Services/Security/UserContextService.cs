@@ -1,7 +1,7 @@
 namespace GerenciadorFuncionarios.Services.Security;
 
-using System.Security.Claims;
 using GerenciadorFuncionarios.Adapters;
+using Microsoft.AspNetCore.Http;
 
 public class UserContextService : IUserContextService
 {
@@ -14,8 +14,6 @@ public class UserContextService : IUserContextService
 
     public string? GetUserId()
     {
-        return _httpContextAccessor.HttpContext?
-            .User
-            .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        throw new NotImplementedException();
     }
 }
