@@ -3,6 +3,7 @@ using GerenciadorFuncionarios.Modules.Produto.Domain.Repositories;
 using GerenciadorFuncionarios.Modules.Produto.Domain.Models;
 using GerenciadorFuncionarios.Shared.Responses;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Responses;
+using GerenciadorFuncionarios.Modules.Produto.Domain.Enums;
 
 namespace GerenciadorFuncionarios.Modules.Produto.Infrastructure.Repositories;
 
@@ -48,12 +49,21 @@ public class ProdutoRepository : IProdutoRepository
 
     public async Task<PaginationResponse<ResponseProdutoDTO>> GetAllAsync(
         int page,
-        int pageSize)
+        int pageSize,
+        string? name,
+        decimal? priceMin,
+        decimal? priceMax,
+        TipoProduto? type)
     {
         // TODO: Buscar paginado
         // TODO: Mapear para DTO
         // TODO: Retornar PaginationResponse
 
+        throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<GerenciadorFuncionarios.Modules.Produto.Domain.Models.Produto>> GetLowStockAsync(int limite = 10)
+    {
         throw new NotImplementedException();
     }
 }

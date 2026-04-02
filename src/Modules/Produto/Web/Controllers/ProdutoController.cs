@@ -6,6 +6,7 @@ using GerenciadorFuncionarios.Modules.Produto.Application.Services;
 using GerenciadorFuncionarios.Shared.Responses;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Responses;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Requests;
+using GerenciadorFuncionarios.Modules.Produto.Domain.Enums;
 
 [Produces("application/json")]
 [ApiController]
@@ -56,28 +57,22 @@ public class ProdutoController : ControllerBase
         throw new NotImplementedException();
     }
 
-    [Authorize]
-    [HttpPost("{id}/saida")]
-    public async Task<ActionResult<ApiResponse<ResponseProdutoDTO>>> BaixarEstoque(
-    Guid id,
-    [FromBody] UpdateEstoqueDTO data)
+    [HttpPatch("{id:guid}/saida")]
+    public async Task<IActionResult> SaidaEstoque(Guid id, [FromBody] UpdateEstoqueDTO data)
     {
-        throw new NotImplementedException();
-    }
-
-    [Authorize]
-    [HttpGet("estoque-baixo")]
-    public async Task<IActionResult> VerificarEstoqueBaixo(
-    [FromQuery] int limite = 5)
-    {
-        throw new NotImplementedException();
+        var result = await _service.BaixarEstoque(id, data);
+        return Ok(result);
     }
 
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllProdutos(
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? name = null,
+        [FromQuery] decimal? minPrice = null,
+        [FromQuery] decimal? maxPrice = null,
+        [FromQuery] TipoProduto? tipo = null)
     {
         throw new NotImplementedException();
     }

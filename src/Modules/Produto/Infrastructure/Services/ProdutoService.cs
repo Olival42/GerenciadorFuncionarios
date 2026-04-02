@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using GerenciadorFuncionarios.Hubs;
 using GerenciadorFuncionarios.Modules.Produto.Application.Services;
+using GerenciadorFuncionarios.Modules.Produto.Domain.Enums;
 using GerenciadorFuncionarios.Modules.Produto.Domain.Repositories;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Requests;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Responses;
@@ -47,17 +48,23 @@ public class ProdutoService : IProdutoService
         throw new NotImplementedException();
     }
 
-    public async Task<ApiResponse<ResponseProdutoDTO>> EntradaEstoque(Guid id, int quantidade)
+    public async Task<ApiResponse<ResponseProdutoDTO>> EntradaEstoque(Guid id, UpdateEstoqueDTO data)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ApiResponse<ResponseProdutoDTO>> BaixarEstoque(Guid id, int quantidade)
+    public async Task<ApiResponse<ResponseProdutoDTO>> BaixarEstoque(Guid id, UpdateEstoqueDTO data)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ApiResponse<PaginationResponse<ResponseProdutoDTO>>> ObterTodosFuncionarios(int page, int pageSize)
+    public async Task<ApiResponse<PaginationResponse<ResponseProdutoDTO>>> ObterTodosProdutos(
+        int page,
+        int pageSize,
+        string? name,
+        decimal? priceMin,
+        decimal? priceMax,
+        TipoProduto? type)
     {
         throw new NotImplementedException();
     }
