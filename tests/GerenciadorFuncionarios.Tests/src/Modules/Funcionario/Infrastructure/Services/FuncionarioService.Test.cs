@@ -40,7 +40,7 @@ public class FuncionarioServiceTests
             .ReturnsAsync(false);
 
         _mockFuncRepository
-            .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
+            .Setup(r => r.AnyByUserNameAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
 
         var result = await _funcService.RegistrarFuncionarioAsync(dto);
@@ -68,7 +68,7 @@ public class FuncionarioServiceTests
     }
 
     [Fact]
-    public async Task RegistrarFuncionarioAsync_Should_Throw_When_Email_Exists()
+    public async Task RegistrarFuncionarioAsync_Should_Throw_When_UserName_Exists()
     {
         var dto = Create_RegisterDto();
 
@@ -77,13 +77,13 @@ public class FuncionarioServiceTests
             .ReturnsAsync(false);
 
         _mockFuncRepository
-            .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
+            .Setup(r => r.AnyByUserNameAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
 
-        var exception = await Assert.ThrowsAsync<EmailAlreadyExistsException>(
+        var exception = await Assert.ThrowsAsync<UserNameAlreadyExistsException>(
             () => _funcService.RegistrarFuncionarioAsync(dto));
 
-        Assert.Equal("Email já cadastrado para outro funcionário.", exception.Message);
+        Assert.Equal("Nome do usuário já cadastrado para outro funcionário.", exception.Message);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class FuncionarioServiceTests
             .ReturnsAsync(false);
 
         _mockFuncRepository
-            .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
+            .Setup(r => r.AnyByUserNameAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
 
         _mockFuncRepository
@@ -124,7 +124,7 @@ public class FuncionarioServiceTests
             .ReturnsAsync(false);
 
         _mockFuncRepository
-            .Setup(r => r.AnyByEmailAsync(It.IsAny<string>()))
+            .Setup(r => r.AnyByUserNameAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
 
         var result = await _funcService.RegistrarFuncionarioAsync(funcDto);
@@ -133,7 +133,7 @@ public class FuncionarioServiceTests
         Assert.True(result.Success);
 
         Assert.Equal(funcDto.Name, result.Data!.Name);
-        Assert.Equal(funcDto.Email, result.Data!.Email);
+        Assert.Equal(funcDto.UserName, result.Data!.UserName);
         Assert.Equal(funcDto.Phone, result.Data!.Phone);
         Assert.Equal(funcDto.CPF, result.Data!.CPF);
         Assert.Equal(funcDto.Role, result.Data!.Role);
@@ -155,7 +155,7 @@ public class FuncionarioServiceTests
 
         Assert.Equal(func.Id, result.Data!.Id);
         Assert.Equal(func.Name, result.Data!.Name);
-        Assert.Equal(func.Email, result.Data!.Email);
+        Assert.Equal(func.UserName, result.Data!.UserName);
         Assert.Equal(func.Phone, result.Data!.Phone);
         Assert.Equal(func.CPF, result.Data!.CPF);
         Assert.Equal(func.Role, result.Data!.Role);
@@ -221,7 +221,7 @@ public class FuncionarioServiceTests
 
         Assert.Equal(func.Id, result.Data!.Id);
         Assert.Equal(func.Name, result.Data!.Name);
-        Assert.Equal(func.Email, result.Data!.Email);
+        Assert.Equal(func.UserName, result.Data!.UserName);
         Assert.Equal(func.Phone, result.Data!.Phone);
         Assert.Equal(func.CPF, result.Data!.CPF);
         Assert.Equal(func.Role, result.Data!.Role);
@@ -377,7 +377,7 @@ public class FuncionarioServiceTests
         var request = new UpdateFuncionarioDTO
         {
             Name = "rogerio",
-            Email = "rogerio@email.com",
+            UserName = "rogerio",
             Password = "12345678",
             Role = Role.GERENTE,
             Phone = "44888888888",
@@ -391,7 +391,7 @@ public class FuncionarioServiceTests
         var result = await _funcService.Atualizar(func.Id, request);
 
         Assert.Equal(request.Name, func.Name);
-        Assert.Equal(request.Email, func.Email);
+        Assert.Equal(request.UserName, func.UserName);
         Assert.True(BCrypt.Net.BCrypt.Verify(request.Password, func.PasswordHash));
         Assert.Equal(request.Role, func.Role);
         Assert.Equal(request.Phone, func.Phone);
@@ -406,7 +406,7 @@ public class FuncionarioServiceTests
         var original = new
         {
             func.Name,
-            func.Email,
+            func.UserName,
             func.Role,
             func.Phone,
             func.CPF,
@@ -425,7 +425,7 @@ public class FuncionarioServiceTests
         await _funcService.Atualizar(func.Id, request);
 
         Assert.Equal("rogerio", func.Name);
-        Assert.Equal(original.Email, func.Email);
+        Assert.Equal(original.UserName, func.UserName);
         Assert.Equal(original.Role, func.Role);
         Assert.Equal(original.Phone, func.Phone);
         Assert.Equal(original.CPF, func.CPF);
@@ -502,7 +502,7 @@ public class FuncionarioServiceTests
         var original = new
         {
             func.Name,
-            func.Email,
+            func.UserName,
             func.Role,
             func.Phone,
             func.CPF,
@@ -520,7 +520,7 @@ public class FuncionarioServiceTests
 
         var result = await _funcService.Atualizar(func.Id, request);
 
-        Assert.Equal(original.Email, result.Data!.Email);
+        Assert.Equal(original.UserName, result.Data!.UserName);
         Assert.Equal(original.Role, result.Data.Role);
         Assert.Equal(original.Phone, result.Data.Phone);
         Assert.Equal(original.CPF, result.Data.CPF);
@@ -532,7 +532,7 @@ public class FuncionarioServiceTests
         return new RegisterFuncionarioDTO
         {
             Name = "Admin",
-            Email = "teste@email.com",
+            UserName = "admin",
             Password = "123456",
             Role = Role.GERENTE,
             CPF = "12345678900",
@@ -548,7 +548,7 @@ public class FuncionarioServiceTests
             Name = "Admin",
             Phone = "44999999999",
             CPF = "68714247097",
-            Email = "teste@email.com",
+            UserName = "admin",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
             Role = Role.GERENTE,
             IsActive = true
@@ -567,7 +567,7 @@ public class FuncionarioServiceTests
                     Name = "Admin",
                     Phone = "44999999999",
                     CPF = "68714247097",
-                    Email = "teste@email.com",
+                    UserName = "admin",
                     Role = Role.GERENTE,
                     IsActive = true
                 },
@@ -577,7 +577,7 @@ public class FuncionarioServiceTests
                     Name = "rogerio",
                     Phone = "44888888888",
                     CPF = "78945612300",
-                    Email = "rogerio@email.com",
+                    UserName = "rogerio",
                     Role = Role.GERENTE,
                     IsActive = true
                 }

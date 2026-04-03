@@ -2,8 +2,8 @@
 
 using System;
 
-public class EmailAlreadyExistsException : Exception
+public class UserNameAlreadyExistsException : Exception
 {
-	public EmailAlreadyExistsException(string message) 
+	public UserNameAlreadyExistsException(string message) 
 		: base(message) { }
 }

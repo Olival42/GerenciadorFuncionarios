@@ -15,7 +15,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         _context = context;
     }
 
-    public Task<Funcionario?> GetByEmail(string email)
+    public Task<Funcionario?> GetByUserName(string userName)
     {
         throw new NotImplementedException();
     }
@@ -35,7 +35,7 @@ public class FuncionarioRepository : IFuncionarioRepository
         throw new NotImplementedException();
     }
 
-    public Task<bool> AnyByEmailAsync(string email)
+    public Task<bool> AnyByUserNameAsync(string userName)
     {
         throw new NotImplementedException();
     }

@@ -38,7 +38,7 @@ public class FuncionarioControllerTests
         return new RegisterFuncionarioDTO
         {
             Name = "Admin",
-            Email = "teste@email.com",
+            UserName = "teste",
             Password = "123456",
             Role = Role.GERENTE,
             CPF = "12345678900",
@@ -52,7 +52,7 @@ public class FuncionarioControllerTests
         {
             Id = Guid.NewGuid(),
             Name = "Admin",
-            Email = "teste@email.com",
+            UserName = "teste",
         };
     }
 
@@ -72,7 +72,7 @@ public class FuncionarioControllerTests
         var apiResponse = Assert.IsType<ApiResponse<ResponseFuncionarioDTO>>(createdResult.Value);
 
         Assert.Equal(res.Name, apiResponse.Data!.Name);
-        Assert.Equal(res.Email, apiResponse.Data.Email);
+        Assert.Equal(res.UserName, apiResponse.Data.UserName);
         Assert.Equal(Role.GERENTE, apiResponse.Data.Role);
     }
 
@@ -195,7 +195,7 @@ public class FuncionarioControllerTests
         var apiResponse = Assert.IsType<ApiResponse<ResponseFuncionarioDTO>>(okResult.Value);
 
         Assert.Equal(res.Name, apiResponse.Data!.Name);
-        Assert.Equal(res.Email, apiResponse.Data.Email);
+        Assert.Equal(res.UserName, apiResponse.Data.UserName);
     }
 
     [Fact]
@@ -246,7 +246,7 @@ public class FuncionarioControllerTests
                     Name = "Admin",
                     Phone = "44999999999",
                     CPF = "68714247097",
-                    Email = "teste@email.com",
+                    UserName = "teste",
                     Role = Role.GERENTE,
                     IsActive = true
                 },
@@ -256,7 +256,7 @@ public class FuncionarioControllerTests
                     Name = "rogerio",
                     Phone = "44888888888",
                     CPF = "78945612300",
-                    Email = "rogerio@email.com",
+                    UserName = "rogerio",
                     Role = Role.GERENTE,
                     IsActive = true
                 }
@@ -277,7 +277,7 @@ public class FuncionarioControllerTests
         Assert.True(apiResponse.Success);
         Assert.Equal(2, apiResponse.Data!.Items.Count);
         Assert.Equal("Admin", apiResponse.Data.Items[0].Name);
-        Assert.Equal("rogerio@email.com", apiResponse.Data.Items[1].Email);
+        Assert.Equal("rogerio@email.com", apiResponse.Data.Items[1].UserName);
     }
 
     [Fact]

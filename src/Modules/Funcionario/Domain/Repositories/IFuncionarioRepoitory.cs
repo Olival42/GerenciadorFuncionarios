@@ -6,11 +6,11 @@ using GerenciadorFuncionarios.Shared.Responses;
 
 public interface IFuncionarioRepository
 {
-    Task<Funcionario?> GetByEmail(string email);
+    Task<Funcionario?> GetByUserName(string userName);
     Task<Funcionario?> GetByIdAsync(Guid id);
     Task Add(Funcionario funcionario);
     Task<bool> AnyByCPFAsync(string cpf);
-    Task<bool> AnyByEmailAsync(string email);
+    Task<bool> AnyByUserNameAsync(string userName);
     Task SaveChangesAsync();
     Task<PaginationResponse<ResponseFuncionarioDTO>> GetAllAsync(
         int page, int pageSize);

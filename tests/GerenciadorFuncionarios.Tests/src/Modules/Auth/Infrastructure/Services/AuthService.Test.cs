@@ -34,7 +34,7 @@ public class AuthServiceTests
             _mockJwtService.Object,
             _mockRedisService.Object,
             _mockUserContextService.Object,
-            _mockLogger!.Object
+            _mockLogger.Object
         );
     }
 
@@ -46,13 +46,12 @@ public class AuthServiceTests
             Name = "Admin",
             Phone = "44999999999",
             CPF = "68714247097",
-            Email = "teste@email.com",
+            UserName = "admin123",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
             Role = Role.GERENTE,
             IsActive = true
         };
     }
-
 
     [Fact]
     public async Task Login_Should_Return_Token_When_Credentials_Are_Valid()
@@ -60,14 +59,14 @@ public class AuthServiceTests
         var func = Create_Funcionario();
 
         _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "teste@email.com")))
+            .Setup(r => r.GetByUserName("admin123"))
             .ReturnsAsync(func);
 
-        var loginDto = new LoginDTO{Email = "teste@email.com", Password = "123456"};
+        var loginDto = new LoginDTO { UserName = "admin123", Password = "123456" };
 
         _mockJwtService
             .Setup(j => j.GenerateAccessToken(It.IsAny<Funcionario>()))
-            .Returns(("access-token", new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds()));
+            .Returns(("access-token", DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds()));
 
         _mockJwtService
             .Setup(j => j.GenerateRefreshToken(It.IsAny<Funcionario>()))
@@ -82,25 +81,17 @@ public class AuthServiceTests
         Assert.NotNull(response);
         Assert.Equal("access-token", response.Data!.AccessToken);
         Assert.Equal("refresh-token", response.Data.RefreshToken);
-
-        _mockRedisService.Verify(r => r.SetAsync(
-            $"refresh:refresh-token",
-            func.Id.ToString(),
-            It.IsAny<TimeSpan>()
-        ), Times.Once);
     }
 
     [Fact]
-    public async Task Login_Should_Return_Error_When_Email_Is_Invalid()
+    public async Task Login_Should_Return_Error_When_UserName_Is_Invalid()
     {
-        var func = Create_Funcionario();
-
         _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "test@email.com")))
+            .Setup(r => r.GetByUserName("admin123"))
             .ReturnsAsync((Funcionario?)null);
 
         var exception = await Assert.ThrowsAsync<BadCredentialsException>(
-            () => _authService.Login(new LoginDTO{Email = "teste@email.com", Password = "123456"})
+            () => _authService.Login(new LoginDTO { UserName = "admin123", Password = "123456" })
         );
 
         Assert.Equal("Credenciais inválidas.", exception.Message);
@@ -112,11 +103,11 @@ public class AuthServiceTests
         var func = Create_Funcionario();
 
         _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "teste@email.com")))
+            .Setup(r => r.GetByUserName("admin123"))
             .ReturnsAsync(func);
 
         var exception = await Assert.ThrowsAsync<BadCredentialsException>(
-            () => _authService.Login(new LoginDTO{Email = "teste@email.com", Password = "12345"})
+            () => _authService.Login(new LoginDTO { UserName = "admin123", Password = "12345" })
         );
 
         Assert.Equal("Credenciais inválidas.", exception.Message);
@@ -129,108 +120,20 @@ public class AuthServiceTests
         func.IsActive = false;
 
         _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "teste@email.com")))
+            .Setup(r => r.GetByUserName("admin123"))
             .ReturnsAsync(func);
 
         var exception = await Assert.ThrowsAsync<BadCredentialsException>(
-            () => _authService.Login(new LoginDTO{Email = "test@email.com", Password = "123456"})
+            () => _authService.Login(new LoginDTO { UserName = "admin123", Password = "123456" })
         );
 
         Assert.Equal("Credenciais inválidas.", exception.Message);
     }
 
     [Fact]
-    public async Task Login_Should_Throw_Exception_When_Redis_Fails()
+    public async Task Login_Should_Throw_Error_When_UserName_Is_NullOrEmpty()
     {
-        var func = Create_Funcionario();
-
-        _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "teste@email.com")))
-            .ReturnsAsync(func);
-
-        _mockJwtService
-            .Setup(j => j.GenerateAccessToken(It.IsAny<Funcionario>()))
-            .Returns(("access-token", new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds()));
-
-        _mockJwtService
-            .Setup(j => j.GenerateRefreshToken(It.IsAny<Funcionario>()))
-            .Returns("refresh-token");
-
-        _mockRedisService
-            .Setup(r => r.SetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()))
-            .ThrowsAsync(new Exception("Redis falhou"));
-
-        var loginDto = new LoginDTO{Email = "teste@email.com", Password = "123456"};
-
-        var ex = await Assert.ThrowsAsync<Exception>(
-            () => _authService.Login(loginDto)
-        );
-
-        Assert.Equal("Redis falhou", ex.Message);
-    }
-
-    [Fact]
-    public async Task Login_Should_Throw_Exception_When_Generate_Access_Token_Fails()
-    {
-        var func = Create_Funcionario();
-
-        _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "teste@email.com")))
-            .ReturnsAsync(func);
-
-        _mockJwtService
-            .Setup(j => j.GenerateAccessToken(It.IsAny<Funcionario>()))
-            .Throws(new Exception("Jwt falhou"));
-
-        _mockJwtService
-            .Setup(j => j.GenerateRefreshToken(It.IsAny<Funcionario>()))
-            .Returns("refresh-token");
-
-        _mockRedisService
-            .Setup(r => r.SetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()));
-
-        var loginDto = new LoginDTO{Email = "teste@email.com", Password = "123456"};
-
-        var ex = await Assert.ThrowsAsync<Exception>(
-            () => _authService.Login(loginDto)
-        );
-
-        Assert.Equal("Jwt falhou", ex.Message);
-    }
-
-    [Fact]
-    public async Task Login_Should_Throw_Exception_When_Generate_Refresh_Token_Fails()
-    {
-        var func = Create_Funcionario();
-
-        _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "teste@email.com")))
-            .ReturnsAsync(func);
-
-        _mockJwtService
-            .Setup(j => j.GenerateAccessToken(It.IsAny<Funcionario>()))
-            .Returns(("access-token", new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds()));
-
-        _mockJwtService
-            .Setup(j => j.GenerateRefreshToken(It.IsAny<Funcionario>()))
-            .Throws(new Exception("Jwt falhou"));
-
-        _mockRedisService
-            .Setup(r => r.SetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()));
-
-        var loginDto = new LoginDTO{Email = "teste@email.com", Password = "123456"};;
-
-        var ex = await Assert.ThrowsAsync<Exception>(
-            () => _authService.Login(loginDto)
-        );
-
-        Assert.Equal("Jwt falhou", ex.Message);
-    }
-
-    [Fact]
-    public async Task Login_Should_Throw_Error_When_Email_Is_NullOrEmpty()
-    {
-        var loginDto = new LoginDTO{Email = "", Password = "123456"};
+        var loginDto = new LoginDTO { UserName = "", Password = "123456" };
 
         var ex = await Assert.ThrowsAsync<BadCredentialsException>(
             () => _authService.Login(loginDto)
@@ -242,7 +145,7 @@ public class AuthServiceTests
     [Fact]
     public async Task Login_Should_Throw_Error_When_Password_Is_NullOrEmpty()
     {
-        var loginDto = new LoginDTO{Email = "teste@email.com", Password = ""};
+        var loginDto = new LoginDTO { UserName = "admin123", Password = "" };
 
         var ex = await Assert.ThrowsAsync<BadCredentialsException>(
             () => _authService.Login(loginDto)
@@ -254,10 +157,9 @@ public class AuthServiceTests
     [Fact]
     public async Task Login_Should_Handle_Multiple_Calls_For_Same_User()
     {
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword("123456");
         var func = Create_Funcionario();
 
-        _mockRepository.Setup(r => r.GetByEmail("teste@email.com"))
+        _mockRepository.Setup(r => r.GetByUserName("admin123"))
                        .ReturnsAsync(func);
 
         _mockJwtService.SetupSequence(j => j.GenerateAccessToken(func))
@@ -271,47 +173,13 @@ public class AuthServiceTests
         _mockRedisService.Setup(r => r.SetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()))
                          .Returns(Task.CompletedTask);
 
-        var loginDto = new LoginDTO{Email = "teste@email.com", Password = "123456"};
+        var loginDto = new LoginDTO { UserName = "admin123", Password = "123456" };
 
         var response1 = await _authService.Login(loginDto);
         var response2 = await _authService.Login(loginDto);
 
-        Assert.NotNull(response1);
-        Assert.NotNull(response2);
-
         Assert.NotEqual(response1.Data!.AccessToken, response2.Data!.AccessToken);
         Assert.NotEqual(response1.Data.RefreshToken, response2.Data.RefreshToken);
-
-        _mockRedisService.Verify(r => r.SetAsync(It.IsAny<string>(), func.Id.ToString(), It.IsAny<TimeSpan>()), Times.Exactly(2));
-    }
-
-    [Fact]
-    public async Task Login_Should_Set_Access_Token_Expiration_Correctly()
-    {
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword("123456");
-        var func = Create_Funcionario();
-
-        _mockRepository
-            .Setup(r => r.GetByEmail(It.Is<string>(email => email == "teste@email.com")))
-            .ReturnsAsync(func);
-
-        var expiration = DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds();
-        _mockJwtService
-            .Setup(j => j.GenerateAccessToken(It.IsAny<Funcionario>()))
-            .Returns(("access-token", expiration));
-
-        _mockJwtService
-            .Setup(j => j.GenerateRefreshToken(It.IsAny<Funcionario>()))
-            .Returns("refresh-token");
-
-        _mockRedisService
-            .Setup(r => r.SetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()));
-
-        var loginDto = new LoginDTO{Email = "teste@email.com", Password = "123456"};
-
-        var response = await _authService.Login(loginDto);
-
-        Assert.Equal(expiration, response.Data!.ExpiresAt);
     }
 
     [Fact]

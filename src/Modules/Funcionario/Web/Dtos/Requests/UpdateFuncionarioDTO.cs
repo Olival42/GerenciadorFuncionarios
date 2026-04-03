@@ -8,8 +8,8 @@ public record UpdateFuncionarioDTO {
     [StringLength(100, ErrorMessage = "Nome tem que ter no máximo 100 caracteres")]
     public string? Name { get; init; }
 
-    [EmailAddress(ErrorMessage = "Email inválido")]
-    public string? Email { get; init; }
+    [StringLength(100, ErrorMessage = "Nome do usuário tem que ter no máximo 100 caracteres")]
+    public string? UserName { get; init; }
 
     [StringLength(20, MinimumLength = 8, ErrorMessage = "A senha deve ter no mínimo 8 caracteres e no máximo 20 caracteres")]
     [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$", ErrorMessage = "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um dígito e um caractere especial.")]

@@ -6,7 +6,7 @@ public record AuthResponseDTO
     (
         string AccessToken,
         long ExpiresAt,
-        string Email,
+        string UserName,
         Role Role
     )
 { }

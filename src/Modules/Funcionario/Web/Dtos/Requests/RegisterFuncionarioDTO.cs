@@ -10,9 +10,9 @@ public record RegisterFuncionarioDTO {
     [StringLength(100)]
     public required string Name { get; init; }
 
-    [Required(ErrorMessage = "Email é obrigatório")]
-    [EmailAddress(ErrorMessage = "Email inválido")]
-    public required string Email { get; init; }
+    [Required(ErrorMessage = "Nome do usuário é obrigatório")]
+    [StringLength(100, ErrorMessage = "Nome do usuário tem que ter no máximo 100 caracteres")]
+    public required string UserName { get; init; }
 
     [Required(ErrorMessage = "Senha é obrigatório")]
     [StringLength(20, MinimumLength = 8, ErrorMessage = "A senha deve ter no mínimo 8 caracteres")]

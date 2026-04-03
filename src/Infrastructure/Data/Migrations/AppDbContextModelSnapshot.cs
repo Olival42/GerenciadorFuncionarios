@@ -22,7 +22,41 @@ namespace GerenciadorFuncionarios.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Produto", b =>
+            modelBuilder.Entity("GerenciadorFuncionarios.Modules.Auth.Domain.Models.Usuario", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
+                    b.ToTable("Usuario");
+
+                    b.HasDiscriminator<string>("UserType").HasValue("Usuario");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("GerenciadorFuncionarios.Modules.Produto.Domain.Models.Produto", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,43 +86,9 @@ namespace GerenciadorFuncionarios.Migrations
                     b.ToTable("Produto");
                 });
 
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Usuario", b =>
+            modelBuilder.Entity("GerenciadorFuncionarios.Modules.Funcionario.Domain.Models.Funcionario", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserType")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("Usuario");
-
-                    b.HasDiscriminator<string>("UserType").HasValue("Usuario");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("GerenciadorFuncionarios.Models.Funcionario", b =>
-                {
-                    b.HasBaseType("GerenciadorFuncionarios.Models.Usuario");
+                    b.HasBaseType("GerenciadorFuncionarios.Modules.Auth.Domain.Models.Usuario");
 
                     b.Property<string>("CPF")
                         .IsRequired()

@@ -13,7 +13,7 @@ public class FuncionarioMappingTests
         var dto = new RegisterFuncionarioDTO
         {
             Name = "João da Silva",
-            Email = "joao@email.com",
+            UserName = "teste",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -23,7 +23,7 @@ public class FuncionarioMappingTests
         var funcionario = dto.Adapt<Funcionario>();
 
         Assert.Equal(dto.Name, funcionario.Name);
-        Assert.Equal(dto.Email, funcionario.Email);
+        Assert.Equal(dto.UserName, funcionario.UserName);
         Assert.Equal(dto.Phone, funcionario.Phone);
         Assert.Equal(dto.CPF, funcionario.CPF);
         Assert.Equal(dto.Role, funcionario.Role);
@@ -36,7 +36,7 @@ public class FuncionarioMappingTests
         {
             Id = Guid.NewGuid(),
             Name = "Maria",
-            Email = "maria@email.com",
+            UserName = "teste",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
             Phone = null!,
             CPF = "98765432100",
@@ -48,7 +48,7 @@ public class FuncionarioMappingTests
 
         Assert.Equal(func.Id, dto.Id);
         Assert.Equal(func.Name, dto.Name);
-        Assert.Equal(func.Email, dto.Email);
+        Assert.Equal(func.UserName, dto.UserName);
         Assert.Equal(func.Phone, dto.Phone);
         Assert.Equal(func.CPF, dto.CPF);
         Assert.Equal(func.Role, dto.Role);

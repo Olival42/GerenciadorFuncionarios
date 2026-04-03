@@ -49,7 +49,7 @@ namespace GerenciadorFuncionarios.Tests.Data
                     Name = "Admin",
                     Phone = "44999999999",
                     CPF = "68714247097",
-                    Email = "teste@email.com",
+                    UserName = "teste",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
                     Role = Role.GERENTE,
                     IsActive = true

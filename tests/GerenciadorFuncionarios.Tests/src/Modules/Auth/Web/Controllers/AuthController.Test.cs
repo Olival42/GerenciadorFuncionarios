@@ -29,18 +29,17 @@ public class AuthControllerTests
     [Fact]
     public async Task Login_Should_Return_Ok_With_Valid_Data()
     {
-        var loginDto = new LoginDTO { Email = "teste@exemplo.com", Password = "1234" };
+        var loginDto = new LoginDTO { UserName = "teste", Password = "1234" };
 
         var tokenResponse = new TokenResponseDTO(
             AccessToken: "access_token",
-            ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
+            ExpiresAt: DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds(),
             RefreshToken: "refresh_token",
-            Email: "teste@exemplo.com",
+            UserName: "teste",
             Role: GerenciadorFuncionarios.Modules.Auth.Domain.Enums.Role.GERENTE
         );
 
-        _mockService.Setup(s => s.Login(
-            It.IsAny<LoginDTO>()))
+        _mockService.Setup(s => s.Login(It.IsAny<LoginDTO>()))
             .ReturnsAsync(ApiResponse<TokenResponseDTO>.Ok(tokenResponse));
 
         var result = await _controller.Login(loginDto);
@@ -49,22 +48,21 @@ public class AuthControllerTests
         var apiResponse = Assert.IsType<ApiResponse<AuthResponseDTO>>(okResult.Value);
 
         Assert.Equal("access_token", apiResponse.Data!.AccessToken);
-        Assert.Equal("teste@exemplo.com", apiResponse.Data.Email);
+        Assert.Equal("teste", apiResponse.Data.UserName);
     }
 
     [Fact]
     public async Task Login_Should_Set_RefreshToken_Cookie()
     {
-        var loginDto = new LoginDTO { Email = "teste@exemplo.com", Password = "1234" };
+        var loginDto = new LoginDTO { UserName = "teste", Password = "1234" };
 
-        _mockService.Setup(s => s.Login(
-            It.IsAny<LoginDTO>()))
+        _mockService.Setup(s => s.Login(It.IsAny<LoginDTO>()))
             .ReturnsAsync(ApiResponse<TokenResponseDTO>.Ok(
                 new TokenResponseDTO(
                     AccessToken: "access_token",
-                    ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
+                    ExpiresAt: DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds(),
                     RefreshToken: "refresh_token",
-                    Email: "teste@exemplo.com",
+                    UserName: "teste",
                     Role: GerenciadorFuncionarios.Modules.Auth.Domain.Enums.Role.GERENTE
                 )
             ));
@@ -78,7 +76,7 @@ public class AuthControllerTests
     [Fact]
     public async Task Login_Should_Propagate_Service_Errors()
     {
-        var loginDto = new LoginDTO { Email = "teste@exemplo.com", Password = "1234" };
+        var loginDto = new LoginDTO { UserName = "teste", Password = "1234" };
 
         _mockService.Setup(s => s.Login(It.IsAny<LoginDTO>()))
             .ThrowsAsync(new BadCredentialsException("Credenciais inválidas"));
@@ -94,13 +92,13 @@ public class AuthControllerTests
     {
         var result = await _controller.Logout();
 
-        var noContentResult = Assert.IsType<NoContentResult>(result);
+        Assert.IsType<NoContentResult>(result);
     }
 
     [Fact]
     public async Task Logout_Should_Delete_RefreshToken_Cookie()
     {
-        var result = await _controller.Logout();
+        await _controller.Logout();
 
         var setCookieHeader = _controller.Response.Headers["Set-Cookie"].ToString();
         Assert.DoesNotContain("refreshToken=refresh_token", setCookieHeader);
@@ -113,9 +111,9 @@ public class AuthControllerTests
 
         var tokenResponse = new TokenResponseDTO(
             AccessToken: "access_token",
-            ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
+            ExpiresAt: DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds(),
             RefreshToken: "refresh_token",
-            Email: "teste@exemplo.com",
+            UserName: "teste",
             Role: GerenciadorFuncionarios.Modules.Auth.Domain.Enums.Role.GERENTE
         );
 
@@ -136,7 +134,7 @@ public class AuthControllerTests
         var apiResponse = Assert.IsType<ApiResponse<AuthResponseDTO>>(okResult.Value);
 
         Assert.Equal("access_token", apiResponse.Data!.AccessToken);
-        Assert.Equal("teste@exemplo.com", apiResponse.Data.Email);
+        Assert.Equal("teste", apiResponse.Data.UserName);
     }
 
     [Fact]
@@ -154,9 +152,9 @@ public class AuthControllerTests
 
         var tokenResponse = new TokenResponseDTO(
             AccessToken: "access_token",
-            ExpiresAt: new DateTimeOffset(DateTime.UtcNow.AddHours(1)).ToUnixTimeSeconds(),
+            ExpiresAt: DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds(),
             RefreshToken: refreshToken,
-            Email: "teste@exemplo.com",
+            UserName: "teste",
             Role: GerenciadorFuncionarios.Modules.Auth.Domain.Enums.Role.GERENTE
         );
 

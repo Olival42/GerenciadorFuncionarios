@@ -37,7 +37,7 @@ public class GlobalErrorHandler : IExceptionFilter
                 new ErrorResponse("CPF_ALREADY_EXISTS", ex.Message)
             ),
 
-            EmailAlreadyExistsException ex => (
+            UserNameAlreadyExistsException ex => (
                 StatusCodes.Status409Conflict,
                 new ErrorResponse("EMAIL_ALREADY_EXISTS", ex.Message)
             ),

@@ -32,7 +32,7 @@ namespace GerenciadorFuncionarios.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
+                    UserName = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
                     UserType = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
@@ -59,9 +59,9 @@ namespace GerenciadorFuncionarios.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuario_Email",
+                name: "IX_Usuario_UserName",
                 table: "Usuario",
-                column: "Email",
+                column: "UserName",
                 unique: true);
         }
 

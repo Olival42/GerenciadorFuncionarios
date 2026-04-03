@@ -11,7 +11,7 @@ public class UpdateFuncionarioDTOTests
         var dto = new UpdateFuncionarioDTO
         {
             Name = null!,
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -45,12 +45,12 @@ public class UpdateFuncionarioDTOTests
     }
 
     [Fact]
-    public void UpdateFuncionarioDTO_Should_Pass_When_Email_Is_Empty()
+    public void UpdateFuncionarioDTO_Should_Pass_When_UserName_Is_Empty()
     {
         var dto = new UpdateFuncionarioDTO
         {
             Name = "a",
-            Email = null!,
+            UserName = null!,
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -67,29 +67,12 @@ public class UpdateFuncionarioDTOTests
     }
 
     [Fact]
-    public void UpdateFuncionarioDTO_Should_Return_Error_When_Email_Invalid()
-    {
-        var dto = new UpdateFuncionarioDTO
-        {
-            Email = "joaosemail.com",
-        };
-
-        var context = new ValidationContext(dto);
-        var results = new List<ValidationResult>();
-
-        var isValid = Validator.TryValidateObject(dto, context, results, true);
-
-        Assert.False(isValid);
-        Assert.Contains(results, r => r.ErrorMessage == "Email inválido");
-    }
-
-    [Fact]
     public void UpdateFuncionarioDTO_Should_Pass_When_Password_Is_Empty()
     {
         var dto = new UpdateFuncionarioDTO
         {
             Name = "nulls",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = null!,
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -162,7 +145,7 @@ public class UpdateFuncionarioDTOTests
         var dto = new UpdateFuncionarioDTO
         {
             Name = "nulls",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = null,
             Phone = "44999999999",
@@ -184,7 +167,7 @@ public class UpdateFuncionarioDTOTests
         var dto = new UpdateFuncionarioDTO
         {
             Name = "nulls",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = null!,
@@ -223,7 +206,7 @@ public class UpdateFuncionarioDTOTests
         var dto = new UpdateFuncionarioDTO
         {
             Name = "nulls",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "44999999999",

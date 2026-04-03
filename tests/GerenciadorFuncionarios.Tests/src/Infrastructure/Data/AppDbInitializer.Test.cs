@@ -36,7 +36,7 @@ public class AppDbInitializerTests
 
         var admin = new Funcionario
         {
-            Email = "admin@admin.com",
+            UserName = "admin",
             Name = "Administrador",
             Phone = "000000000",
             CPF = "00000000000",

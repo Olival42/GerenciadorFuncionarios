@@ -83,7 +83,7 @@ public class GlobalErrorHandlerTests
     [Fact]
     public void OnException_Should_Return_409_When_EmailAlreadyExistsException()
     {
-        var context = CreateContext(new EmailAlreadyExistsException("Email Already exists"));
+        var context = CreateContext(new UserNameAlreadyExistsException("Email Already exists"));
 
         _handler.OnException(context);
 

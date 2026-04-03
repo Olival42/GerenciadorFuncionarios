@@ -7,7 +7,7 @@ public class LoginDTOTests
     [Fact]
     public void LoginDTO_Should_Be_Valid_When_Fields_Are_Filled()
     {
-        var dto = new LoginDTO{ Email = "test@email.com", Password = "123456"};
+        var dto = new LoginDTO { UserName = "teste", Password = "123456" };
 
         var context = new ValidationContext(dto);
         var results = new List<ValidationResult>();
@@ -19,9 +19,9 @@ public class LoginDTOTests
     }
 
     [Fact]
-    public void LoginDTO_Should_Return_Error_When_Email_Is_Null()
+    public void LoginDTO_Should_Return_Error_When_UserName_Is_Null()
     {
-        var dto = new LoginDTO{Email = null!, Password = "123456"};
+        var dto = new LoginDTO { UserName = null!, Password = "123456" };
 
         var context = new ValidationContext(dto);
         var results = new List<ValidationResult>();
@@ -29,13 +29,13 @@ public class LoginDTOTests
         var isValid = Validator.TryValidateObject(dto, context, results, true);
 
         Assert.False(isValid);
-        Assert.Contains(results, r => r.ErrorMessage == "Email é obrigatório");
+        Assert.Contains(results, r => r.ErrorMessage == "UserName é obrigatório");
     }
 
     [Fact]
     public void LoginDTO_Should_Return_Error_When_Password_Is_Null()
     {
-        var dto = new LoginDTO{Email = "test@email.com", Password = null!};
+        var dto = new LoginDTO { UserName = "teste", Password = null! };
 
         var context = new ValidationContext(dto);
         var results = new List<ValidationResult>();
@@ -49,7 +49,7 @@ public class LoginDTOTests
     [Fact]
     public void LoginDTO_Should_Return_Two_Errors_When_All_Invalid()
     {
-        var dto = new LoginDTO{Email = null!, Password = null!};
+        var dto = new LoginDTO { UserName = null!, Password = null! };
 
         var context = new ValidationContext(dto);
         var results = new List<ValidationResult>();

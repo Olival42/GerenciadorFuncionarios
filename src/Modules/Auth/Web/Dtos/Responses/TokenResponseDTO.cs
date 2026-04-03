@@ -7,7 +7,7 @@ public record TokenResponseDTO
         string AccessToken,
         long ExpiresAt,
         string RefreshToken,
-        string Email,
+        string UserName,
         Role Role
     )
 { }

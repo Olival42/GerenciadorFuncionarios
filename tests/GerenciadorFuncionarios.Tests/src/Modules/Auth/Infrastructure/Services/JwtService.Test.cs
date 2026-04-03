@@ -56,7 +56,7 @@ public class JwtServiceTests
     }
 
     [Fact]
-    public void GenerateAccessToken_Should_ContainEmailClaim()
+    public void GenerateAccessToken_Should_ContainUserNameClaim()
     {
         var user = GetFuncionario();
 
@@ -66,7 +66,7 @@ public class JwtServiceTests
 
         var claim = jwt.Claims.First(c => c.Type == ClaimTypes.Name);
 
-        Assert.Equal(user.Email, claim.Value);
+        Assert.Equal(user.UserName, claim.Value);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class JwtServiceTests
     }
 
     [Fact]
-    public void GenerateRefreshToken_Should_ContainEmailClaim()
+    public void GenerateRefreshToken_Should_ContainUserNameClaim()
     {
         var user = GetFuncionario();
 
@@ -181,7 +181,7 @@ public class JwtServiceTests
 
         var claim = jwt.Claims.First(c => c.Type == ClaimTypes.Name);
 
-        Assert.Equal(user.Email, claim.Value);
+        Assert.Equal(user.UserName, claim.Value);
     }
 
     [Fact]
@@ -351,7 +351,7 @@ public class JwtServiceTests
             Name = "Admin",
             Phone = "44999999999",
             CPF = "68714247097",
-            Email = "teste@email.com",
+            UserName = "admin23",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
             Role = Role.GERENTE,
             IsActive = true

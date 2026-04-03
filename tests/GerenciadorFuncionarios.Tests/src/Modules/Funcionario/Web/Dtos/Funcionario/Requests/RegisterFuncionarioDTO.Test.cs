@@ -11,7 +11,7 @@ public class RegisterFuncionarioDTOTests
         var dto = new RegisterFuncionarioDTO
         {
             Name = "João da Silva",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -33,7 +33,7 @@ public class RegisterFuncionarioDTOTests
         var dto = new RegisterFuncionarioDTO
         {
             Name = null!,
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -50,34 +50,12 @@ public class RegisterFuncionarioDTOTests
     }
 
     [Fact]
-    public void Should_Return_Error_When_Email_Is_Invalid()
-    {
-        var dto = new RegisterFuncionarioDTO
-        {
-            Name = "João da Silva",
-            Email = "joaoemail.com",
-            Password = "Senha@123",
-            Role = Role.GERENTE,
-            Phone = "44999999999",
-            CPF = "52998224725",
-        };
-
-        var context = new ValidationContext(dto);
-        var results = new List<ValidationResult>();
-
-        var isValid = Validator.TryValidateObject(dto, context, results, true);
-
-        Assert.False(isValid);
-        Assert.Contains(results, r => r.ErrorMessage == "Email inválido");
-    }
-
-    [Fact]
     public void Should_Return_Error_When_Password_Is_Too_Short()
     {
         var dto = new RegisterFuncionarioDTO
         {
             Name = "João da Silva",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@1",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -99,7 +77,7 @@ public class RegisterFuncionarioDTOTests
         var dto = new RegisterFuncionarioDTO
         {
             Name = "João da Silva",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha1123",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -121,7 +99,7 @@ public class RegisterFuncionarioDTOTests
         var dto = new RegisterFuncionarioDTO
         {
             Name = "João da Silva",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "449999999",
@@ -143,7 +121,7 @@ public class RegisterFuncionarioDTOTests
         var dto = new RegisterFuncionarioDTO
         {
             Name = "João da Silva",
-            Email = "joao@email.com",
+            UserName = "joao",
             Password = "Senha@123",
             Role = Role.GERENTE,
             Phone = "44999999999",
@@ -165,7 +143,7 @@ public class RegisterFuncionarioDTOTests
         var dto = new RegisterFuncionarioDTO
         {
             Name = "João da Silva",
-            Email = "joao@email.com",
+            UserName = "joao@email.com",
             Password = "Senha@123",
             Role = (Role)999,
             Phone = "44999999999",

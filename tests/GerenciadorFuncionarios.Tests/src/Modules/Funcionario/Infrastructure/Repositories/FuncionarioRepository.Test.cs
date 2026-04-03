@@ -21,29 +21,29 @@ public class FuncionarioRepositoryTests
     }
 
     [Fact]
-    public async Task GetByEmail_Should_Return_Funcionario_When_Email_Exists_And_IsActive()
+    public async Task GetByEmail_Should_Return_Funcionario_When_UserName_Exists_And_IsActive()
     {
         var func = Create_Funcionario();
 
         await _context.Funcionario.AddAsync(func);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetByEmail(func.Email);
+        var result = await _repository.GetByUserName(func.UserName);
 
         Assert.NotNull(result);
-        Assert.Equal(func.Email, result.Email);
+        Assert.Equal(func.UserName, result.UserName);
     }
 
     [Fact]
-    public async Task GetByEmail_Should_Return_Null_When_Email_NonExists()
+    public async Task GetByEmail_Should_Return_Null_When_UserName_NonExists()
     {
-        var result = await _repository.GetByEmail("teste@email.com");
+        var result = await _repository.GetByUserName("admin");
 
         Assert.Null(result);
     }
 
     [Fact]
-    public async Task GetByEmail_Should_Return_Funcionario_When_EmailExists_And_IsNotActive()
+    public async Task GetByEmail_Should_Return_Funcionario_When_UserNameExists_And_IsNotActive()
     {
         var func = Create_Funcionario();
         func.IsActive = false;
@@ -51,15 +51,15 @@ public class FuncionarioRepositoryTests
         await _context.Funcionario.AddAsync(func);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetByEmail(func.Email);
+        var result = await _repository.GetByUserName(func.UserName);
 
         Assert.Null(result);
     }
 
     [Fact]
-    public async Task GetByEmail_Should_Return_First_When_Duplicates_Exist()
+    public async Task GetByUserName_Should_Return_First_When_Duplicates_Exist()
     {
-        var email = "teste@email.com";
+        var userName = "admin";
 
         var func1 = Create_Funcionario();
         var func2 = Create_Funcionario();
@@ -67,10 +67,10 @@ public class FuncionarioRepositoryTests
         await _context.Funcionario.AddRangeAsync(func1, func2);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.GetByEmail(email);
+        var result = await _repository.GetByUserName(userName);
 
         Assert.NotNull(result);
-        Assert.Equal(func1.Email, result.Email);
+        Assert.Equal(func1.UserName, result.UserName);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class FuncionarioRepositoryTests
         var result = await _repository.GetByIdAsync(func.Id);
 
         Assert.NotNull(result);
-        Assert.Equal(func.Email, result.Email);
+        Assert.Equal(func.UserName, result.UserName);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class FuncionarioRepositoryTests
             .FirstOrDefaultAsync(f => f.Id == funcionario.Id);
 
         Assert.NotNull(result);
-        Assert.Equal(funcionario.Email, result.Email);
+        Assert.Equal(funcionario.UserName, result.UserName);
     }
 
     [Fact]
@@ -150,14 +150,14 @@ public class FuncionarioRepositoryTests
     }
 
     [Fact]
-    public async Task AnyByEmailAsync_Should_Return_True_When_Email_Exists()
+    public async Task AnyByUserNameAsync_Should_Return_True_When_Email_Exists()
     {
         var func = Create_Funcionario();
 
         await _context.Funcionario.AddAsync(func);
         await _context.SaveChangesAsync();
 
-        var result = await _repository.AnyByEmailAsync(func.Email);
+        var result = await _repository.AnyByUserNameAsync(func.UserName);
 
         Assert.True(result);
     }
@@ -165,9 +165,9 @@ public class FuncionarioRepositoryTests
     [Fact]
     public async Task AnyByEmailAsync_Should_Return_False_When_Email_NonExists()
     {
-        var email = "teste@email.com";
+        var userName = "admin";
 
-        var result = await _repository.AnyByEmailAsync(email);
+        var result = await _repository.AnyByUserNameAsync(userName);
 
         Assert.False(result);
     }
@@ -183,7 +183,7 @@ public class FuncionarioRepositoryTests
         var result = await _context.Funcionario.FirstOrDefaultAsync(f => f.Id == funcionario.Id);
 
         Assert.NotNull(result);
-        Assert.Equal(funcionario.Email, result.Email);
+        Assert.Equal(funcionario.UserName, result.UserName);
     }
 
     [Fact]
@@ -367,7 +367,7 @@ public class FuncionarioRepositoryTests
 
         Assert.Equal(func1.Id, dto1.Id);
         Assert.Equal(func1.Name, dto1.Name);
-        Assert.Equal(func1.Email, dto1.Email);
+        Assert.Equal(func1.UserName, dto1.UserName);
         Assert.Equal(func1.CPF, dto1.CPF);
         Assert.Equal(func1.IsActive, dto1.IsActive);
         Assert.Equal(func1.Role, dto1.Role);
@@ -375,7 +375,7 @@ public class FuncionarioRepositoryTests
 
         Assert.Equal(func2.Id, dto2.Id);
         Assert.Equal(func2.Name, dto2.Name);
-        Assert.Equal(func2.Email, dto2.Email);
+        Assert.Equal(func2.UserName, dto2.UserName);
         Assert.Equal(func2.CPF, dto2.CPF);
         Assert.Equal(func2.IsActive, dto2.IsActive);
         Assert.Equal(func2.Role, dto2.Role);
@@ -390,7 +390,7 @@ public class FuncionarioRepositoryTests
             Name = "Admin",
             Phone = "44999999999",
             CPF = "68714247097",
-            Email = "teste@email.com",
+            UserName = "admin",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
             Role = Role.GERENTE,
             IsActive = true
