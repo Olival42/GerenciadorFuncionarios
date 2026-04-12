@@ -5,20 +5,24 @@ using Xunit;
 using GerenciadorFuncionarios.Shared.Responses;
 using Microsoft.AspNetCore.Http.Features;
 using GerenciadorFuncionarios.Modules.Auth.Web.Controllers;
-using GerenciadorFuncionarios.Modules.Auth.Application.Services;
 using GerenciadorFuncionarios.Modules.Auth.Web.Requests;
 using GerenciadorFuncionarios.Modules.Auth.Web.Responses;
 using GerenciadorFuncionarios.Modules.Auth.Domain.Exceptions;
+using GerenciadorFuncionarios.Modules.Auth.Application.UseCases;
 
 public class AuthControllerTests
 {
-    private readonly Mock<IAuthService> _mockService;
+    private readonly Mock<ILogin> _useCaseLogin;
+    private readonly Mock<ILogout> _useCaseLogout;
+    private readonly Mock<IRefresh> _useCaseRefresh;
     private readonly AuthController _controller;
 
     public AuthControllerTests()
     {
-        _mockService = new Mock<IAuthService>();
-        _controller = new AuthController(_mockService.Object);
+        _useCaseLogin = new Mock<ILogin>();
+        _useCaseLogout = new Mock<ILogout>();
+        _useCaseRefresh = new Mock<IRefresh>();
+        _controller = new AuthController(_useCaseLogin.Object, _useCaseLogout.Object, _useCaseRefresh.Object);
 
         _controller.ControllerContext = new ControllerContext
         {
@@ -39,7 +43,7 @@ public class AuthControllerTests
             Role: GerenciadorFuncionarios.Modules.Auth.Domain.Enums.Role.GERENTE
         );
 
-        _mockService.Setup(s => s.Login(It.IsAny<LoginDTO>()))
+        _useCaseLogin.Setup(s => s.Execute(It.IsAny<LoginDTO>()))
             .ReturnsAsync(ApiResponse<TokenResponseDTO>.Ok(tokenResponse));
 
         var result = await _controller.Login(loginDto);
@@ -56,7 +60,7 @@ public class AuthControllerTests
     {
         var loginDto = new LoginDTO { UserName = "teste", Password = "1234" };
 
-        _mockService.Setup(s => s.Login(It.IsAny<LoginDTO>()))
+        _useCaseLogin.Setup(s => s.Execute(It.IsAny<LoginDTO>()))
             .ReturnsAsync(ApiResponse<TokenResponseDTO>.Ok(
                 new TokenResponseDTO(
                     AccessToken: "access_token",
@@ -78,7 +82,7 @@ public class AuthControllerTests
     {
         var loginDto = new LoginDTO { UserName = "teste", Password = "1234" };
 
-        _mockService.Setup(s => s.Login(It.IsAny<LoginDTO>()))
+        _useCaseLogin.Setup(s => s.Execute(It.IsAny<LoginDTO>()))
             .ThrowsAsync(new BadCredentialsException("Credenciais inválidas"));
 
         var ex = await Assert.ThrowsAsync<BadCredentialsException>(
@@ -117,7 +121,7 @@ public class AuthControllerTests
             Role: GerenciadorFuncionarios.Modules.Auth.Domain.Enums.Role.GERENTE
         );
 
-        _mockService.Setup(s => s.Refresh(refreshToken))
+        _useCaseRefresh.Setup(s => s.Execute(refreshToken))
             .ReturnsAsync(ApiResponse<TokenResponseDTO>.Ok(tokenResponse));
 
         var cookiesMock = new Mock<IRequestCookieCollection>();
@@ -158,7 +162,7 @@ public class AuthControllerTests
             Role: GerenciadorFuncionarios.Modules.Auth.Domain.Enums.Role.GERENTE
         );
 
-        _mockService.Setup(s => s.Refresh(refreshToken))
+        _useCaseRefresh.Setup(s => s.Execute(refreshToken))
             .ReturnsAsync(ApiResponse<TokenResponseDTO>.Ok(tokenResponse));
 
         await _controller.Refresh();

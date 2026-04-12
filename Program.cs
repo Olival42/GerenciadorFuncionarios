@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using StackExchange.Redis;
-using GerenciadorFuncionarios.Hubs;
 using GerenciadorFuncionarios.Infrastructure.RateLimit;
 using GerenciadorFuncionarios.Web.ExceptionHandlers;
 using GerenciadorFuncionarios.Infrastructure.Security;
@@ -11,6 +10,7 @@ using GerenciadorFuncionarios.Infrastructure.DependencyInjection;
 using GerenciadorFuncionarios.Infrastructure;
 using GerenciadorFuncionarios.Infrastructure.Mappings;
 using GerenciadorFuncionarios.Infrastructure.Seed;
+using GerenciadorFuncionarios.Modules.Produto.Web.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

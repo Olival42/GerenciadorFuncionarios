@@ -3,20 +3,24 @@ namespace GerenciadorFuncionarios.Modules.Auth.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
-using GerenciadorFuncionarios.Modules.Auth.Application.Services;
 using GerenciadorFuncionarios.Modules.Auth.Web.Responses;
 using GerenciadorFuncionarios.Modules.Auth.Web.Requests;
 using GerenciadorFuncionarios.Shared.Responses;
+using GerenciadorFuncionarios.Modules.Auth.Application.UseCases;
 
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _service;
+    private readonly ILogin _useCaseLogin;
+    private readonly ILogout _useCaseLogout;
+    private readonly IRefresh _useCaseRefresh;
 
-    public AuthController(IAuthService service)
+    public AuthController(ILogin useCaseLogin, ILogout useCaseLogout, IRefresh useCaseRefresh)
     {
-        _service = service;
+        _useCaseLogin = useCaseLogin;
+        _useCaseLogout = useCaseLogout;
+        _useCaseRefresh = useCaseRefresh;
     }
 
     [EnableRateLimiting("Auth")]

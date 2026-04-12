@@ -1,4 +1,4 @@
-﻿﻿namespace GerenciadorFuncionarios.Web.ExceptionHandlers;
+﻿namespace GerenciadorFuncionarios.Web.ExceptionHandlers;
 
 using GerenciadorFuncionarios.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +47,11 @@ public class GlobalErrorHandler : IExceptionFilter
                 new ErrorResponse("ENTITY_INACTIVE", ex.Message)
             ),
 
+            BadRequestException ex => (
+                StatusCodes.Status400BadRequest,
+                new ErrorResponse("BAD_REQUEST", ex.Message)
+            ),
+
             BadCredentialsException ex => (
                 StatusCodes.Status401Unauthorized,
                 new ErrorResponse("BAD_CREDENTIALS", ex.Message)
@@ -60,6 +65,11 @@ public class GlobalErrorHandler : IExceptionFilter
             InvalidOperationException ex => (
                 StatusCodes.Status400BadRequest,
                 new ErrorResponse("INVALID_OPERATION", ex.Message)
+            ),
+
+            ArgumentException ex => (
+                StatusCodes.Status400BadRequest,
+                new ErrorResponse("ARGUMENT_EXCEPTION", ex.Message)
             ),
 
             Exception ex => (

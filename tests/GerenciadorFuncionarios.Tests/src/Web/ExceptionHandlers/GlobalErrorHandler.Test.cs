@@ -144,4 +144,30 @@ public class GlobalErrorHandlerTests
         Assert.Equal(500, result.StatusCode);
         Assert.True(context.ExceptionHandled);
     }
+
+    [Fact]
+    public void OnException_Should_Return_400_When_ArgumentException()
+    {
+        var context = CreateContext(new ArgumentException("Argument exception"));
+
+        _handler.OnException(context);
+
+        var result = Assert.IsType<ObjectResult>(context.Result);
+
+        Assert.Equal(400, result.StatusCode);
+        Assert.True(context.ExceptionHandled);
+    }
+
+    [Fact]
+    public void OnException_Should_Return_400_When_InvalidOperationException()
+    {
+        var context = CreateContext(new InvalidOperationException("Invalid operation"));
+
+        _handler.OnException(context);
+
+        var result = Assert.IsType<ObjectResult>(context.Result);
+
+        Assert.Equal(400, result.StatusCode);
+        Assert.True(context.ExceptionHandled);
+    }
 }

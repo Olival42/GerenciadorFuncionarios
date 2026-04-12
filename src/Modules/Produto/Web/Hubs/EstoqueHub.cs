@@ -1,4 +1,4 @@
-namespace GerenciadorFuncionarios.Hubs;
+namespace GerenciadorFuncionarios.Modules.Produto.Web.Hubs;
 
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Responses;
 using Microsoft.AspNetCore.SignalR;

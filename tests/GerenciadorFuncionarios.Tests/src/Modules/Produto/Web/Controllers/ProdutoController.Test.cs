@@ -2,22 +2,41 @@ using Xunit;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers;
-using GerenciadorFuncionarios.Modules.Produto.Application.Services;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Requests;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Responses;
 using GerenciadorFuncionarios.Shared.Responses;
 using GerenciadorFuncionarios.Modules.Produto.Domain.Enums;
 using GerenciadorFuncionarios.Domain.Exceptions;
+using GerenciadorFuncionarios.Modules.Produto.Application.UseCases;
 
 public class ProdutoControllerTests
 {
-    private readonly Mock<IProdutoService> _mockService;
+    private readonly Mock<IRegistrarProduto> _mockRegistrarProduto;
+    private readonly Mock<IObterProdutoPorId> _mockObterProdutoPorId;
+    private readonly Mock<IInativarProduto> _mockInativarProduto;
+    private readonly Mock<IAtualizarProduto> _mockAtualizarProduto;
+    private readonly Mock<IEntradaEstoque> _mockEntradaEstoque;
+    private readonly Mock<IBaixarEstoque> _mockBaixarEstoque;
+    private readonly Mock<IObterTodosProdutos> _mockObterTodosProdutos;
     private readonly ProdutoController _controller;
 
     public ProdutoControllerTests()
     {
-        _mockService = new Mock<IProdutoService>();
-        _controller = new ProdutoController(_mockService.Object);
+        _mockRegistrarProduto = new Mock<IRegistrarProduto>();
+        _mockObterProdutoPorId = new Mock<IObterProdutoPorId>();
+        _mockInativarProduto = new Mock<IInativarProduto>();
+        _mockAtualizarProduto = new Mock<IAtualizarProduto>();
+        _mockEntradaEstoque = new Mock<IEntradaEstoque>();
+        _mockBaixarEstoque = new Mock<IBaixarEstoque>();
+        _mockObterTodosProdutos = new Mock<IObterTodosProdutos>();
+        _controller = new ProdutoController(
+            _mockRegistrarProduto.Object,
+            _mockObterProdutoPorId.Object,
+            _mockInativarProduto.Object,
+            _mockAtualizarProduto.Object,
+            _mockEntradaEstoque.Object,
+            _mockBaixarEstoque.Object,
+            _mockObterTodosProdutos.Object);
     }
 
     private ResponseProdutoDTO Create_Response()
@@ -67,7 +86,7 @@ public class ProdutoControllerTests
         var dto = Create_Register();
         var response = ApiResponse<ResponseProdutoDTO>.Ok(Create_Response());
 
-        _mockService.Setup(s => s.RegistrarProdutoAsync(dto))
+        _mockRegistrarProduto.Setup(s => s.Execute(dto))
             .ReturnsAsync(response);
 
         var result = await _controller.Resgister(dto);
@@ -83,8 +102,8 @@ public class ProdutoControllerTests
 
         await _controller.Resgister(dto);
 
-        _mockService.Verify(
-            s => s.RegistrarProdutoAsync(dto),
+        _mockRegistrarProduto.Verify(
+            s => s.Execute(dto),
             Times.Once);
     }
 
@@ -94,7 +113,7 @@ public class ProdutoControllerTests
         var dto = Create_Register();
         var response = ApiResponse<ResponseProdutoDTO>.Ok(Create_Response());
 
-        _mockService.Setup(s => s.RegistrarProdutoAsync(dto))
+        _mockRegistrarProduto.Setup(s => s.Execute(dto))
             .ReturnsAsync(response);
 
         var result = await _controller.Resgister(dto);
@@ -122,8 +141,8 @@ public class ProdutoControllerTests
     {
         var dto = Create_Register();
 
-        _mockService
-            .Setup(s => s.RegistrarProdutoAsync(dto))
+        _mockRegistrarProduto
+            .Setup(s => s.Execute(dto))
             .ThrowsAsync(new EntityAlreadyExistsException("Produto já existe"));
 
         var result = await _controller.Resgister(dto);
@@ -136,8 +155,8 @@ public class ProdutoControllerTests
     {
         var response = ApiResponse<ResponseProdutoDTO>.Ok(Create_Response());
 
-        _mockService
-            .Setup(s => s.ObterProdutoPorId(It.IsAny<Guid>()))
+        _mockObterProdutoPorId
+            .Setup(s => s.Execute(It.IsAny<Guid>()))
             .ReturnsAsync(response);
 
         var result = await _controller.GetProdutoById(Guid.NewGuid());
@@ -150,16 +169,16 @@ public class ProdutoControllerTests
     {
         await _controller.GetProdutoById(Guid.NewGuid());
 
-        _mockService.Verify(
-            s => s.ObterProdutoPorId(It.IsAny<Guid>()),
+        _mockObterProdutoPorId.Verify(
+            s => s.Execute(It.IsAny<Guid>()),
             Times.Once);
     }
 
     [Fact]
     public async Task ObterProdutoPorId_Should_Return_NotFound_When_Not_Exists()
     {
-        _mockService
-            .Setup(s => s.ObterProdutoPorId(It.IsAny<Guid>()))
+        _mockObterProdutoPorId
+            .Setup(s => s.Execute(It.IsAny<Guid>()))
             .ThrowsAsync(new EntityNotFoundException("Produto não encontrado"));
 
         var result = await _controller.GetProdutoById(Guid.NewGuid());
@@ -173,8 +192,8 @@ public class ProdutoControllerTests
         var dto = Create_Update();
         var response = ApiResponse<ResponseProdutoDTO>.Ok(Create_Response());
 
-        _mockService
-            .Setup(s => s.Atualizar(It.IsAny<Guid>(), dto))
+        _mockAtualizarProduto
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ReturnsAsync(response);
 
         var result = await _controller.UpdateProduto(Guid.NewGuid(), dto);
@@ -189,8 +208,8 @@ public class ProdutoControllerTests
 
         await _controller.UpdateProduto(Guid.NewGuid(), dto);
 
-        _mockService.Verify(
-            s => s.Atualizar(It.IsAny<Guid>(), dto),
+        _mockAtualizarProduto.Verify(
+            s => s.Execute(It.IsAny<Guid>(), dto),
             Times.Once);
     }
 
@@ -199,8 +218,8 @@ public class ProdutoControllerTests
     {
         var dto = Create_Update();
 
-        _mockService
-            .Setup(s => s.Atualizar(It.IsAny<Guid>(), dto))
+        _mockAtualizarProduto
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ThrowsAsync(new EntityNotFoundException("Produto não encontrado"));
 
         var result = await _controller.UpdateProduto(Guid.NewGuid(), dto);
@@ -226,8 +245,8 @@ public class ProdutoControllerTests
         var dto = Create_UpdateEstoque();
         var response = ApiResponse<ResponseProdutoDTO>.Ok(Create_Response());
 
-        _mockService
-            .Setup(s => s.EntradaEstoque(It.IsAny<Guid>(), dto))
+        _mockEntradaEstoque
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ReturnsAsync(response);
 
         var result = await _controller.EntradaEstoque(Guid.NewGuid(), dto);
@@ -242,8 +261,8 @@ public class ProdutoControllerTests
 
         await _controller.EntradaEstoque(Guid.NewGuid(), dto);
 
-        _mockService.Verify(
-            s => s.EntradaEstoque(It.IsAny<Guid>(), dto),
+        _mockEntradaEstoque.Verify(
+            s => s.Execute(It.IsAny<Guid>(), dto),
             Times.Once);
     }
 
@@ -252,8 +271,8 @@ public class ProdutoControllerTests
     {
         var dto = Create_UpdateEstoque();
 
-        _mockService
-            .Setup(s => s.EntradaEstoque(It.IsAny<Guid>(), dto))
+        _mockEntradaEstoque
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ThrowsAsync(new EntityNotFoundException("Produto não encontrado"));
 
         var result = await _controller.EntradaEstoque(Guid.NewGuid(), dto);
@@ -266,8 +285,8 @@ public class ProdutoControllerTests
     {
         var dto = Create_UpdateEstoque();
 
-        _mockService
-            .Setup(s => s.EntradaEstoque(It.IsAny<Guid>(), dto))
+        _mockEntradaEstoque
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ThrowsAsync(new InvalidOperationException("Quantidade inválida"));
 
         var result = await _controller.EntradaEstoque(Guid.NewGuid(), dto);
@@ -281,8 +300,8 @@ public class ProdutoControllerTests
         var dto = Create_UpdateEstoque();
         var response = ApiResponse<ResponseProdutoDTO>.Ok(Create_Response());
 
-        _mockService
-            .Setup(s => s.BaixarEstoque(It.IsAny<Guid>(), dto))
+        _mockBaixarEstoque
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ReturnsAsync(response);
 
         var result = await _controller.SaidaEstoque(Guid.NewGuid(), dto);
@@ -297,8 +316,8 @@ public class ProdutoControllerTests
 
         await _controller.SaidaEstoque(Guid.NewGuid(), dto);
 
-        _mockService.Verify(
-            s => s.BaixarEstoque(It.IsAny<Guid>(), dto),
+        _mockBaixarEstoque.Verify(
+            s => s.Execute(It.IsAny<Guid>(), dto),
             Times.Once);
     }
 
@@ -307,8 +326,8 @@ public class ProdutoControllerTests
     {
         var dto = Create_UpdateEstoque();
 
-        _mockService
-            .Setup(s => s.BaixarEstoque(It.IsAny<Guid>(), dto))
+        _mockBaixarEstoque
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ThrowsAsync(new EntityNotFoundException("Produto não encontrado"));
 
         var result = await _controller.SaidaEstoque(Guid.NewGuid(), dto);
@@ -321,8 +340,8 @@ public class ProdutoControllerTests
     {
         var dto = Create_UpdateEstoque();
 
-        _mockService
-            .Setup(s => s.BaixarEstoque(It.IsAny<Guid>(), dto))
+        _mockBaixarEstoque
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ThrowsAsync(new InvalidOperationException("Quantidade inválida"));
 
         var result = await _controller.SaidaEstoque(Guid.NewGuid(), dto);
@@ -335,8 +354,8 @@ public class ProdutoControllerTests
     {
         var dto = Create_UpdateEstoque();
 
-        _mockService
-            .Setup(s => s.BaixarEstoque(It.IsAny<Guid>(), dto))
+        _mockBaixarEstoque
+            .Setup(s => s.Execute(It.IsAny<Guid>(), dto))
             .ThrowsAsync(new InvalidOperationException("Estoque insuficiente"));
 
         var result = await _controller.SaidaEstoque(Guid.NewGuid(), dto);
@@ -357,16 +376,16 @@ public class ProdutoControllerTests
     {
         await _controller.InactiveById(Guid.NewGuid());
 
-        _mockService.Verify(
-            s => s.InativarPorId(It.IsAny<Guid>()),
+        _mockInativarProduto.Verify(
+            s => s.Execute(It.IsAny<Guid>()),
             Times.Once);
     }
 
     [Fact]
     public async Task Inativar_Should_Return_NotFound()
     {
-        _mockService
-            .Setup(s => s.InativarPorId(It.IsAny<Guid>()))
+        _mockInativarProduto
+            .Setup(s => s.Execute(It.IsAny<Guid>()))
             .ThrowsAsync(new EntityNotFoundException("Produto não encontrado"));
 
         var result = await _controller.InactiveById(Guid.NewGuid());
@@ -384,8 +403,8 @@ public class ProdutoControllerTests
             ApiResponse<PaginationResponse<ResponseProdutoDTO>>
             .Ok(paginated);
 
-        _mockService
-            .Setup(s => s.ObterTodosProdutos(
+        _mockObterTodosProdutos
+            .Setup(s => s.Execute(
                 1, 10, null, null, null, null))
             .ReturnsAsync(response);
 
@@ -401,8 +420,8 @@ public class ProdutoControllerTests
         await _controller.GetAllProdutos(
             1, 10, "Gas", 100, 200, TipoProduto.GAS);
 
-        _mockService.Verify(s =>
-            s.ObterTodosProdutos(
+        _mockObterTodosProdutos.Verify(s =>
+            s.Execute(
                 1, 10, "Gas", 100, 200, TipoProduto.GAS),
             Times.Once);
     }
@@ -418,8 +437,8 @@ public class ProdutoControllerTests
             ApiResponse<PaginationResponse<ResponseProdutoDTO>>
             .Ok(paginated);
 
-        _mockService
-            .Setup(s => s.ObterTodosProdutos(
+        _mockObterTodosProdutos
+            .Setup(s => s.Execute(
                 2, 5, null, null, null, null))
             .ReturnsAsync(response);
 
@@ -437,8 +456,8 @@ public class ProdutoControllerTests
     {
         await _controller.GetAllProdutos(1, 10, "Gas", null, null, null);
 
-        _mockService.Verify(s =>
-            s.ObterTodosProdutos(
+        _mockObterTodosProdutos.Verify(s =>
+            s.Execute(
                 1, 10, "Gas", null, null, null),
             Times.Once);
     }
@@ -449,8 +468,8 @@ public class ProdutoControllerTests
         await _controller.GetAllProdutos(
             1, 10, null, null, null, TipoProduto.GAS);
 
-        _mockService.Verify(s =>
-            s.ObterTodosProdutos(
+        _mockObterTodosProdutos.Verify(s =>
+            s.Execute(
                 1, 10, null, null, null, TipoProduto.GAS),
             Times.Once);
     }
@@ -461,8 +480,8 @@ public class ProdutoControllerTests
         await _controller.GetAllProdutos(
             1, 10, null, 100, 200, null);
 
-        _mockService.Verify(s =>
-            s.ObterTodosProdutos(
+        _mockObterTodosProdutos.Verify(s =>
+            s.Execute(
                 1, 10, null, 100, 200, null),
             Times.Once);
     }
@@ -478,8 +497,8 @@ public class ProdutoControllerTests
             ApiResponse<PaginationResponse<ResponseProdutoDTO>>
             .Ok(paginated);
 
-        _mockService
-            .Setup(s => s.ObterTodosProdutos(
+        _mockObterTodosProdutos
+            .Setup(s => s.Execute(
                 1, 10, null, null, null, null))
             .ReturnsAsync(response);
 

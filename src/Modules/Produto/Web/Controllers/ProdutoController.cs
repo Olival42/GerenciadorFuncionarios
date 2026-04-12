@@ -2,7 +2,7 @@ namespace GerenciadorFuncionarios.Modules.Produto.Web.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using GerenciadorFuncionarios.Modules.Produto.Application.Services;
+using GerenciadorFuncionarios.Modules.Produto.Application.UseCases;
 using GerenciadorFuncionarios.Shared.Responses;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Responses;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Requests;
@@ -13,11 +13,30 @@ using GerenciadorFuncionarios.Modules.Produto.Domain.Enums;
 [Route("api/produtos")]
 public class ProdutoController : ControllerBase
 {
-    private readonly IProdutoService _service;
+    private readonly IRegistrarProduto _registrarProduto;
+    private readonly IObterProdutoPorId _obterProdutoPorId;
+    private readonly IInativarProduto _inativarProduto;
+    private readonly IAtualizarProduto _atualizarProduto;
+    private readonly IEntradaEstoque _entradaEstoque;
+    private readonly IBaixarEstoque _baixarEstoque;
+    private readonly IObterTodosProdutos _obterTodosProdutos;
 
-    public ProdutoController(IProdutoService service)
+    public ProdutoController(
+        IRegistrarProduto registrarProduto,
+        IObterProdutoPorId obterProdutoPorId,
+        IInativarProduto inativarProduto,
+        IAtualizarProduto atualizarProduto,
+        IEntradaEstoque entradaEstoque,
+        IBaixarEstoque baixarEstoque,
+        IObterTodosProdutos obterTodosProdutos)
     {
-        _service = service;
+        _registrarProduto = registrarProduto;
+        _obterProdutoPorId = obterProdutoPorId;
+        _inativarProduto = inativarProduto;
+        _atualizarProduto = atualizarProduto;
+        _entradaEstoque = entradaEstoque;
+        _baixarEstoque = baixarEstoque;
+        _obterTodosProdutos = obterTodosProdutos;
     }
 
     [Authorize]
@@ -60,8 +79,7 @@ public class ProdutoController : ControllerBase
     [HttpPatch("{id:guid}/saida")]
     public async Task<IActionResult> SaidaEstoque(Guid id, [FromBody] UpdateEstoqueDTO data)
     {
-        var result = await _service.BaixarEstoque(id, data);
-        return Ok(result);
+        throw new NotImplementedException();
     }
 
     [Authorize]

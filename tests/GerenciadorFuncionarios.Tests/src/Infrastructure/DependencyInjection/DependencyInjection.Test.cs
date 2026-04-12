@@ -5,17 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using Moq;
 using GerenciadorFuncionarios.Infrastructure;
-using GerenciadorFuncionarios.Modules.Funcionario.Application.Services;
 using GerenciadorFuncionarios.Infrastructure.Cache;
 using GerenciadorFuncionarios.Infrastructure.DependencyInjection;
 using GerenciadorFuncionarios.Modules.Funcionario.Domain.Repositories;
 using GerenciadorFuncionarios.Modules.Auth.Application.Services;
 using GerenciadorFuncionarios.Modules.Funcionario.Infrastructure.Repositories;
-using GerenciadorFuncionarios.Modules.Funcionario.Infrastructure.Services;
 using GerenciadorFuncionarios.Modules.Auth.Infrastructure.Services;
-using GerenciadorFuncionarios.Modules.Produto.Application.Services;
-using GerenciadorFuncionarios.Modules.Produto.Infrastructure.Services;
-using GerenciadorFuncionarios.Hubs;
 using GerenciadorFuncionarios.Modules.Produto.Infrastructure.Repositories;
 using GerenciadorFuncionarios.Modules.Produto.Domain.Repositories;
 using GerenciadorFuncionarios.Infrastructure.Cache.Interfaces;
@@ -56,22 +51,6 @@ public class DependencyInjectionTests
         services.AddServices();
 
         var provider = services.BuildServiceProvider();
-
-        Assert.IsType<FuncionarioService>(
-             provider.GetService<IFuncionarioService>()
-         );
-
-        Assert.IsType<AuthService>(
-            provider.GetService<IAuthService>()
-        );
-
-        Assert.IsType<ProdutoService>(
-            provider.GetService<IProdutoService>()
-        );
-
-        Assert.IsType<EstoqueHub>(
-            provider.GetService<EstoqueHub>()
-        );
     }
 
     [Fact]

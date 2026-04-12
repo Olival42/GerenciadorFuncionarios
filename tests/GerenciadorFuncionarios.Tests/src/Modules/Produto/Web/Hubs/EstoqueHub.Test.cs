@@ -1,8 +1,8 @@
 using Xunit;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
-using GerenciadorFuncionarios.Hubs;
 using GerenciadorFuncionarios.Modules.Produto.Web.Controllers.Dtos.Responses;
+using GerenciadorFuncionarios.Modules.Produto.Web.Hubs;
 
 public class EstoqueHubTests
 {
